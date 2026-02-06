@@ -1,3 +1,9 @@
+---
+name: setup-hetzner-docker-server
+description: Initialize a fresh Hetzner Ubuntu server with a non-root user configured for Docker application deployment. Sets up secure SSH access, Docker permissions, and a dedicated data directory.
+allowed-tools: [Bash]
+---
+
 # Hetzner Server Initial Setup with Docker
 
 ## Purpose
@@ -9,12 +15,19 @@ Initialize a fresh Hetzner Ubuntu server with a non-root user configured for Doc
 - Docker already installed on the server
 - SSH public key(s) added to root's authorized_keys
 
-## Skill Invocation
+## When to Use This Skill
 Use this skill when you need to:
 - Set up a new Hetzner server for hosting Docker applications
 - Create a non-root user with Docker and sudo access
 - Secure SSH access by disabling password authentication
 - Prepare a server for automated deployments
+
+## Customization Variables
+Before running commands, replace these placeholders:
+- `<SERVER_IP>`: The IP address of your Hetzner server
+- `<TEMP_PASSWORD>`: A secure temporary password for the ubuntu user
+- `ubuntu`: Replace with different username if needed (default: ubuntu)
+- `/data`: Replace with different data directory path if needed (default: /data)
 
 ## Steps
 
@@ -127,14 +140,6 @@ After running all steps, you should have:
 - **Passwordless Sudo**: Appropriate for automation/admin users but understand the security implications
 - **Docker Group**: Docker group membership grants root-equivalent access to the system
 - **Root Access**: Keep root SSH access via keys as backup
-
-## Customization Variables
-When using this skill, customize these values:
-- `<SERVER_IP>`: The IP address of your Hetzner server
-- `<TEMP_PASSWORD>`: A secure temporary password for the ubuntu user (e.g., `ubuntu123!`)
-- `ubuntu`: Replace with different username if needed
-- `/data`: Replace with different data directory path if needed
-- `755`: Adjust directory permissions as needed (775 for group-writable, 700 for user-only)
 
 ## Troubleshooting
 - **SSH service name**: On Ubuntu 24.04+, the service is named `ssh` not `sshd`
