@@ -27,6 +27,24 @@ Initialize a fresh Hetzner Ubuntu server with a non-root user configured for Doc
 - Preparing servers for automated deployments
 - Securing server access with SSH key-based authentication
 
+### Git & GitHub Workflow
+
+#### [Git Commit, Push, and Pull Request](./.claude/skills/git-commit-push-pr/)
+Commit all changes, push to remote, and create a GitHub pull request with an auto-generated description.
+
+**What it does:**
+- Detects the repository's default branch automatically
+- Creates a feature branch if currently on the default branch
+- Stages all changes and commits with a conventional commit message
+- Pushes to the remote with upstream tracking
+- Checks for an existing open PR and skips creation if found
+- Creates a new PR with a structured description (Summary, Changes, Notes)
+
+**Use cases:**
+- Wrapping up work and submitting changes for review in one step
+- Quickly opening a PR after finishing a feature or bug fix
+- Pushing additional commits to an existing open PR
+
 ## Usage
 
 ### Using Skills with Claude
