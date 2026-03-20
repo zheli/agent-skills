@@ -19,6 +19,14 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 
 - **[Markdown Task Tracking](./.claude/skills/markdown-task-tracking/)** - Track project tasks and epics in individual markdown files under `docs/`, with `docs/PROJECT.md` as the central index.
 
+## Adding Skills
+
+You can add all skills from this collection to your project using:
+
+```bash
+npx skills add https://github.com/zheli/agent-skills
+```
+
 ## Contributing
 
 1. Create a new directory under `.claude/skills/<skill-name>/`
