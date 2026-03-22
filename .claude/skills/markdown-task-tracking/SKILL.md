@@ -51,9 +51,9 @@ Examples:
 ### Status values
 
 Use these status values consistently in both the index table and individual files:
-- **Not started** — work has not begun
-- **In progress** — actively being worked on
-- **Complete** — finished and verified
+- **⏳ Not started** — work has not begun
+- **🚧 In progress** — actively being worked on
+- **✅ Complete** — finished and verified
 
 ### Index table format
 
@@ -62,11 +62,11 @@ The `docs/PROJECT.md` file contains a table with this structure:
 ```markdown
 | ID | Type | Title | Status | File |
 |----|------|-------|--------|------|
-| 001 | Epic | Example Epic | **In progress** | [001-EPIC-example-epic.md](001-EPIC-example-epic.md) |
-| 002 | Task | Example Task | Not started | [002-TASK-example-task.md](002-TASK-example-task.md) |
+| 001 | Epic | Example Epic | **🚧 In progress** | [001-EPIC-example-epic.md](001-EPIC-example-epic.md) |
+| 002 | Task | Example Task | ⏳ Not started | [002-TASK-example-task.md](002-TASK-example-task.md) |
 ```
 
-Bold the status when it is **In progress** or **Complete** to make active/done
+Bold the status when it is **🚧 In progress** or **✅ Complete** to make active/done
 items stand out.
 
 ## Steps
@@ -145,7 +145,7 @@ Increment by 1 and zero-pad to 3 digits.
 # {ID} — {Title}
 
 **Type:** Epic | Task
-**Status:** Not started
+**Status:** ⏳ Not started
 **Created:** YYYY-MM-DD
 **Updated:** YYYY-MM-DD
 
@@ -170,7 +170,7 @@ Increment by 1 and zero-pad to 3 digits.
 **c) Add a row to the index table in `docs/PROJECT.md`:**
 
 ```markdown
-| {ID} | {Type} | {Title} | Not started | [{filename}]({filename}) |
+| {ID} | {Type} | {Title} | ⏳ Not started | [{filename}]({filename}) |
 ```
 
 ### 4. Start work on a task or epic
@@ -178,9 +178,9 @@ Increment by 1 and zero-pad to 3 digits.
 When beginning work on an item:
 
 1. Open `docs/{ID}-{TYPE}-{title}.md`
-2. Change `**Status:**` from `Not started` to `In progress`
+2. Change `**Status:**` from `⏳ Not started` to `🚧 In progress`
 3. Update the `**Updated:**` date
-4. Update the matching row in `docs/PROJECT.md` to `**In progress**`
+4. Update the matching row in `docs/PROJECT.md` to `**🚧 In progress**`
 
 ### 5. Record progress
 
@@ -196,10 +196,10 @@ As you work, update the task/epic file:
 When work is finished:
 
 1. Open `docs/{ID}-{TYPE}-{title}.md`
-2. Change `**Status:**` to `Complete`
+2. Change `**Status:**` to `✅ Complete`
 3. Update the `**Updated:**` date
 4. Check off all remaining steps
-5. Update the matching row in `docs/PROJECT.md` to `**Complete**`
+5. Update the matching row in `docs/PROJECT.md` to `**✅ Complete**`
 
 ### 7. Commit and push
 
