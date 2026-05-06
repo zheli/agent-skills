@@ -69,6 +69,10 @@ The `docs/PROJECT.md` file contains a table with this structure:
 Bold the status when it is **🚧 In progress** or **✅ Complete** to make active/done
 items stand out.
 
+Every status value in `docs/PROJECT.md` must include its emoji prefix. Never
+write a plain-text-only status such as `Not started`, `In progress`, or
+`Complete` in the index table.
+
 ## Steps
 
 ### 1. Bootstrap (if `docs/PROJECT.md` does not exist)
@@ -137,7 +141,18 @@ When a new task or epic is identified (by the user or discovered during work):
 ls docs/[0-9]*-{EPIC,TASK}-*.md 2>/dev/null | sort -t/ -k2 | tail -1
 ```
 
-Increment by 1 and zero-pad to 3 digits.
+If the `gh` CLI is available, also check open GitHub pull requests before
+assigning the ID:
+
+```bash
+# Check open PR titles and branch names for already-claimed task IDs
+gh pr list --state open --json number,title,headRefName 2>/dev/null
+```
+
+Scan open PR titles and branch names for existing 3-digit task IDs, such as a
+branch named `003-TASK-...` or a PR title beginning with `003`. Increment by 1,
+zero-pad to 3 digits, and use the first ID that is not already present in
+`docs/` or claimed by an open PR.
 
 **b) Create the file using the template:**
 
@@ -223,6 +238,11 @@ git push
    file and the `docs/PROJECT.md` index table.
 5. **Always commit and push** — all changes must be committed and pushed before
    the session ends. Do not leave uncommitted work.
+6. **Always include status emoji in `PROJECT.md`** — index status values must
+   include their emoji prefix (⏳, 🚧, ✅). Plain-text-only status is invalid.
+7. **Check open PRs before assigning IDs** — if `gh` is available, inspect open
+   PR titles and branch names for claimed IDs before choosing a new task/epic
+   number.
 
 ## Expected Results
 
