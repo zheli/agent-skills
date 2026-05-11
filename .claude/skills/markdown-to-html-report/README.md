@@ -1,6 +1,6 @@
 # markdown-to-html-report
 
-A Claude skill that generates a self-contained, human-friendly companion HTML report from a markdown AI-agent response (or any markdown document).
+An AI agent skill that generates a self-contained, human-friendly companion HTML report from a markdown AI-agent response (or any markdown document).
 
 ## What it produces
 
@@ -18,11 +18,11 @@ A single `.html` file with:
 
 ## Files
 
-- `SKILL.md` — the skill instructions Claude loads.
+- `SKILL.md` — the skill instructions the AI agent loads.
 - `template.html` — the baseline HTML file. Copy and customize this for each report.
 - `README.md` — this file.
 
-## When Claude should use it
+## When the AI agent should use it
 
 User asks for any of:
 
@@ -31,7 +31,7 @@ User asks for any of:
 - "Generate a companion HTML for my answer"
 - "Render this as a webpage"
 
-## When Claude should NOT use it
+## When the AI agent should NOT use it
 
 - The user wants a real multi-page static site.
 - The user wants a slide deck or PDF.
@@ -41,7 +41,7 @@ User asks for any of:
 
 By default, mirror the source markdown's basename:
 
-- `proposals/feedback-20260507.md` → `proposals/feedback-20260507.html`
+- `report.md` → `report.html`
 
 Or place under `reports/` when generating several companion artifacts.
 

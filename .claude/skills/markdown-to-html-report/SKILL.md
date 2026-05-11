@@ -98,7 +98,7 @@ Customize the template by:
 
 Default naming: alongside the source markdown, mirror the basename.
 
-- Source: `proposals/feedback-20260507.md` → `proposals/feedback-20260507.html` (or `feedback-20260507.html` in repo root if explicitly requested).
+- Source: `report.md` → `report.html` (or in repo root if explicitly requested).
 - If multiple HTML reports may be generated, place them in `reports/` or another folder the user names.
 
 Ask the user if the location/filename is not obvious.
@@ -144,9 +144,9 @@ System font stack: `-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Ar
 ## Examples
 
 ### Example 1 — Review feedback explainer
-Source: `proposals/feedback-20260507.md` (multi-comment reviewer feedback).
+Source: `report.md` (multi-comment reviewer feedback).
 Pattern: blockquote for reviewer text → excerpt panels for original proposal lines → recommendation panel → tradeoff table → numbered action list → open-questions warn panel.
-Output: `feedback-comment-2.html` in the same directory or repo root.
+Output: `report.html` in the same directory or repo root.
 
 ### Example 2 — Decision document
 Source: a markdown weighing two architectural options.
