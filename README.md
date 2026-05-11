@@ -20,6 +20,10 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 - **[Create Linear Ticket](./.claude/skills/create-ticket/)** - Create Linear tickets from natural language descriptions using the `linear` CLI, with structured Background and Definition of Done sections.
 - **[Markdown Task Tracking](./.claude/skills/markdown-task-tracking/)** - Track project tasks and epics in individual markdown files under `docs/`, with `docs/PROJECT.md` as the central index.
 
+### Documentation & Reporting
+
+- **[Markdown to HTML Report](./.claude/skills/markdown-to-html-report/)** - Generate a self-contained, human-friendly companion HTML report from a markdown document, with light/dark mode toggle and no external dependencies.
+
 ## Adding Skills
 
 You can add all skills from this collection to your project using:
