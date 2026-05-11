@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REPORT TITLE</title>
+<script>
+  // Apply saved/system theme before first paint to avoid flash.
+  (function () {
+    try {
+      var saved = localStorage.getItem('mdReportTheme');
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) {
+      // localStorage may be unavailable (e.g. file:// in some browsers); fall back silently.
+    }
+  })();
+</script>
+<style>
+  :root {
+    --fg: #1f2328;
+    --muted: #57606a;
+    --bg: #ffffff;
+    --panel: #f6f8fa;
+    --border: #d0d7de;
+    --accent: #0969da;
+    --accent-on: #ffffff;
+    --accent-soft: #ddf4ff;
+    --accent-soft-border: #54aeff;
+    --warn: #9a6700;
+    --warn-soft: #fff8c5;
+    --warn-border: #d4a72c;
+    --good: #1a7f37;
+    --good-soft: #dafbe1;
+    --good-border: #4ac26b;
+    --code-bg: #f6f8fa;
+    --pill-bg: #ddf4ff;
+    --pill-fg: #0969da;
+    --pill-good-bg: #dafbe1;
+    --pill-good-fg: #1a7f37;
+    --pill-warn-bg: #fff8c5;
+    --pill-warn-fg: #9a6700;
+    --btn-bg: #f6f8fa;
+    --btn-fg: #1f2328;
+    --btn-border: #d0d7de;
+    --shadow: 0 1px 2px rgba(31, 35, 40, 0.06);
+  }
+  html[data-theme="dark"] {
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --bg: #0d1117;
+    --panel: #161b22;
+    --border: #30363d;
+    --accent: #4493f8;
+    --accent-on: #0d1117;
+    --accent-soft: #0c2d6b;
+    --accent-soft-border: #1f6feb;
+    --warn: #e3b341;
+    --warn-soft: #3a2c00;
+    --warn-border: #9e6a03;
+    --good: #3fb950;
+    --good-soft: #0f2f1a;
+    --good-border: #238636;
+    --code-bg: #161b22;
+    --pill-bg: #0c2d6b;
+    --pill-fg: #79c0ff;
+    --pill-good-bg: #0f2f1a;
+    --pill-good-fg: #3fb950;
+    --pill-warn-bg: #3a2c00;
+    --pill-warn-fg: #e3b341;
+    --btn-bg: #161b22;
+    --btn-fg: #e6edf3;
+    --btn-border: #30363d;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+  /* Theme toggle */
+  .theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    border: 1px solid var(--btn-border);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .theme-toggle .icon { width: 14px; height: 14px; display: inline-block; }
+  html[data-theme="dark"] .theme-toggle .icon-sun { display: inline-block; }
+  html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+  html:not([data-theme="dark"]) .theme-toggle .icon-sun { display: none; }
+  html:not([data-theme="dark"]) .theme-toggle .icon-moon { display: inline-block; }
+
+  header.page {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+  header.page h1 {
+    margin: 0 0 8px;
+    font-size: 28px;
+    line-height: 1.25;
+  }
+  header.page .sub {
+    color: var(--muted);
+    font-size: 14px;
+  }
+  header.page .sub span { margin-right: 16px; }
+
+  h2 {
+    margin: 48px 0 12px;
+    font-size: 22px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+  h3 {
+    margin: 28px 0 8px;
+    font-size: 17px;
+  }
+  p { margin: 8px 0 12px; }
+  ul, ol { margin: 8px 0 12px; padding-left: 24px; }
+  li { margin: 4px 0; }
+  a { color: var(--accent); }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.92em;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  pre code { background: transparent; padding: 0; }
+
+  blockquote.review {
+    margin: 12px 0 16px;
+    padding: 12px 16px;
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    color: var(--fg);
+    font-style: italic;
+  }
+  blockquote.review .who {
+    display: block;
+    font-style: normal;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 16px 0;
+  }
+  .panel.warn { background: var(--warn-soft); border-color: var(--warn-border); }
+  .panel.good { background: var(--good-soft); border-color: var(--good-border); }
+  .panel h3 { margin-top: 0; }
+
+  .excerpt-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14.5px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: var(--panel); font-weight: 600; }
+  .table-scroll { overflow-x: auto; }
+
+  .tldr {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-soft-border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0 24px;
+  }
+  .tldr strong { color: var(--accent); }
+
+  ol.actions { counter-reset: step; padding-left: 0; list-style: none; }
+  ol.actions > li {
+    counter-increment: step;
+    position: relative;
+    padding: 8px 0 8px 44px;
+    margin: 4px 0;
+    border-top: 1px solid var(--border);
+  }
+  ol.actions > li:first-child { border-top: none; }
+  ol.actions > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    color: var(--accent-on);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 28px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    vertical-align: middle;
+    background: var(--pill-bg);
+    color: var(--pill-fg);
+  }
+  .pill.good { background: var(--pill-good-bg); color: var(--pill-good-fg); }
+  .pill.warn { background: var(--pill-warn-bg); color: var(--pill-warn-fg); }
+
+  footer.page {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  footer.page a { color: var(--accent); }
+
+  @media (max-width: 520px) {
+    .wrap { padding: 64px 16px 64px; }
+    header.page h1 { font-size: 24px; }
+    h2 { font-size: 20px; }
+    .theme-toggle { padding: 6px 10px; font-size: 12px; }
+  }
+  @media print {
+    .theme-toggle { display: none; }
+    .wrap { max-width: none; padding: 0; }
+    a { color: inherit; text-decoration: underline; }
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">
+  <svg class="icon icon-moon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6 0a6 6 0 0 0 9.32 7.5A8 8 0 1 1 8.5.68 6 6 0 0 0 6 0z"/></svg>
+  <svg class="icon icon-sun" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1.5A4.5 4.5 0 1 0 8 3.5a4.5 4.5 0 0 0 0 9zM8 0a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V.75A.75.75 0 0 1 8 0zm0 13a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 8 13zM0 8a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5H.75A.75.75 0 0 1 0 8zm13 0a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5A.75.75 0 0 1 13 8zM2.34 2.34a.75.75 0 0 1 1.06 0l1.06 1.06a.75.75 0 0 1-1.06 1.06L2.34 3.4a.75.75 0 0 1 0-1.06zm9.2 9.2a.75.75 0 0 1 1.06 0l1.06 1.06a.75.75 0 1 1-1.06 1.06l-1.06-1.06a.75.75 0 0 1 0-1.06zM2.34 13.66a.75.75 0 0 1 0-1.06l1.06-1.06a.75.75 0 1 1 1.06 1.06l-1.06 1.06a.75.75 0 0 1-1.06 0zm9.2-9.2a.75.75 0 0 1 0-1.06L12.6 2.34a.75.75 0 1 1 1.06 1.06L12.6 4.46a.75.75 0 0 1-1.06 0z"/></svg>
+  <span class="label">Theme</span>
+</button>
+
+<div class="wrap">
+
+<header class="page">
+  <h1>REPORT TITLE <span class="pill">OPTIONAL</span></h1>
+  <div class="sub">
+    <span><strong>Field:</strong> value</span>
+    <span><strong>Field:</strong> value</span>
+  </div>
+</header>
+
+<!-- ====== TL;DR ====== -->
+<div class="tldr">
+  <strong>TL;DR.</strong> One- to two-sentence headline takeaway.
+</div>
+
+<!-- ====== Section example ====== -->
+<h2>1. Section title</h2>
+<p>Body copy goes here.</p>
+
+<blockquote class="review">
+  &ldquo;Optional quoted text from a reviewer or source.&rdquo;
+  <span class="who">— Author, context</span>
+</blockquote>
+
+<div class="panel">
+  <div class="excerpt-label">Source excerpt label</div>
+<pre><code>Excerpted code or source text.</code></pre>
+</div>
+
+<div class="panel good">
+  <h3>Recommendation</h3>
+  <p style="margin:0;">Headline recommendation paragraph.</p>
+</div>
+
+<h3>Concrete actions</h3>
+<ol class="actions">
+  <li><strong>Step name.</strong> Description.</li>
+  <li><strong>Step name.</strong> Description.</li>
+</ol>
+
+<h3>Tradeoff summary</h3>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Dimension</th><th>Option A</th><th>Option B</th></tr></thead>
+  <tbody>
+    <tr><td>Row</td><td>Cell</td><td>Cell</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="panel warn">
+  <h3>Open questions</h3>
+  <ol><li>Question.</li></ol>
+</div>
+
+<footer class="page">
+  <p>Source files: <a href="./SOURCE.md"><code>SOURCE.md</code></a></p>
+  <p>This page is a companion artifact generated from the source markdown.</p>
+</footer>
+
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('themeToggle');
+    if (!btn) return;
+    var label = btn.querySelector('.label');
+
+    function currentTheme() {
+      return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    }
+    function applyAria() {
+      var t = currentTheme();
+      btn.setAttribute('aria-label', t === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+      if (label) label.textContent = t === 'dark' ? 'Light' : 'Dark';
+    }
+    applyAria();
+
+    btn.addEventListener('click', function () {
+      var next = currentTheme() === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('mdReportTheme', next); } catch (e) {}
+      applyAria();
+    });
+
+    // If the user hasn't picked a theme yet, follow OS changes live.
+    if (window.matchMedia) {
+      var mq = window.matchMedia('(prefers-color-scheme: dark)');
+      var listener = function (e) {
+        try {
+          if (localStorage.getItem('mdReportTheme')) return;
+        } catch (err) {}
+        document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        applyAria();
+      };
+      if (mq.addEventListener) mq.addEventListener('change', listener);
+      else if (mq.addListener) mq.addListener(listener);
+    }
+  })();
+</script>
+
+</body>
+</html>
