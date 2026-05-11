@@ -16,6 +16,10 @@ The skill produces:
 - A **light/dark mode toggle** in the top-right that respects `prefers-color-scheme` on first load and persists the user's choice in `localStorage`.
 - A **layout chosen to match the content** — not a one-size-fits-all dump.
 
+## Reference
+
+**https://thariqs.github.io/html-effectiveness/** — a curated gallery of 20 self-contained HTML files an AI agent produced across nine categories (exploration, code review, design, prototyping, diagrams, decks, research, reports, custom editors). Use it as inspiration for layout ambition and component variety. Every entry is itself a single `.html` file with no external dependencies.
+
 ## When to Use This Skill
 
 Use this skill when the user asks for any of:
@@ -24,12 +28,11 @@ Use this skill when the user asks for any of:
 - "Make this markdown easier to read"
 - "Generate a companion HTML for my answer"
 - "Render this as a webpage"
-- A polished review/decision/explainer artifact derived from markdown content
+- A polished review/decision/explainer/diagram/deck artifact derived from markdown content
 
 Do **not** use this skill when:
 
 - The user wants a real static site / multi-page docs (use a static site generator).
-- The user wants a slide deck, PDF, or print-only output.
 - The markdown is going to be rendered by a platform that already handles it (GitHub, Notion, etc.) — unless they explicitly want a standalone HTML copy.
 
 ## Workflow
@@ -52,26 +55,35 @@ If the content type is ambiguous, ask the user once before generating.
 
 ### Step 2 — Choose a layout pattern
 
-Pick the layout that helps the human most. Combine patterns when useful.
+Pick the layout that helps the human most. Combine patterns when useful. Aim for the ambition level shown at **https://thariqs.github.io/html-effectiveness/** — plain prose dumps are the floor, not the target.
 
 | Content type | Layout signals to include |
 |---|---|
-| Explainer / deep-dive | TL;DR box at top, numbered sections, generous whitespace, footnotes/sources at bottom |
+| Explainer / deep-dive | TL;DR box at top, numbered sections, generous whitespace, collapsible details, footnotes/sources at bottom |
 | Decision / recommendation | Headline recommendation panel, action steps as numbered cards, tradeoff table |
-| Review feedback response | Quoted reviewer text in a left-bordered blockquote, "what was originally proposed" excerpt panels, "recommendation" panel, open-questions warn panel |
+| Review / feedback | Quoted reviewer text in a left-bordered blockquote, excerpt panels for original text, recommendation panel, open-questions warn panel |
 | Comparison / tradeoff | Side-by-side or full-width tradeoff table, summary verdict box |
-| Status report | Status pill in header, milestone/checklist table, risks panel |
-| Reference | Sticky table of contents (optional), dense tables, anchored headings |
+| Exploration / options | Card grid showing each option side-by-side with trade-offs called out inline |
+| Status report | Status pill in header, milestone/checklist table, small inline chart, risks panel |
+| Incident / post-mortem | Minute-by-minute timeline, log excerpt panels, follow-up checklist |
+| Code review / PR | Annotated diff with margin notes, severity tags, module map (boxes and arrows), jump links |
+| Diagram / flowchart | Inline SVG flowchart or architecture diagram with labeled nodes and annotated paths |
+| Slide deck | `<section>`-per-slide layout with arrow-key JS navigation (left/right), no external deps |
+| Reference / cheat-sheet | Sticky table of contents, dense tables, anchored headings |
 
-Common reusable components:
+Common reusable components (all in `template.html`):
 
 - **TL;DR / headline box** — accent-tinted panel at the top.
 - **Panels**: neutral (`.panel`), good (`.panel.good`), warn (`.panel.warn`).
 - **Excerpt panel** — small label + monospace block, for quoting source material.
 - **Pill** — small uppercase badge next to a title (e.g. status, sentiment, theme).
 - **Numbered action list** — `ol.actions` with circled numerals for "do this, then this".
-- **Tradeoff table** — 2- or 3-column comparison.
+- **Tradeoff / comparison table** — 2- or 3-column comparison.
+- **Card grid** — CSS `grid` with `auto-fill` columns; each card has a thumbnail area, title, and description.
+- **Inline SVG diagrams** — boxes, arrows, flowcharts drawn directly in the HTML; no external image files.
 - **Footer** — links back to source files and a "this is a companion artifact" note.
+
+When the content genuinely benefits, add lightweight interactivity (collapsible sections, tab switchers, arrow-key navigation for decks). Keep JS self-contained and minimal — no frameworks.
 
 ### Step 3 — Generate the HTML
 
@@ -143,7 +155,9 @@ System font stack: `-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Ar
 
 ## Examples
 
-### Example 1 — Review feedback explainer
+See **https://thariqs.github.io/html-effectiveness/** for 20 live examples across all content types below.
+
+### Example 1 — Review feedback
 Source: `report.md` (multi-comment reviewer feedback).
 Pattern: blockquote for reviewer text → excerpt panels for original proposal lines → recommendation panel → tradeoff table → numbered action list → open-questions warn panel.
 Output: `report.html` in the same directory or repo root.
@@ -154,14 +168,22 @@ Pattern: TL;DR with chosen option highlighted → side-by-side tradeoff table �
 
 ### Example 3 — Status update
 Source: a markdown progress report.
-Pattern: status pill in header → milestone table with status column → risks/blockers warn panel → next steps numbered list.
+Pattern: status pill in header → milestone table with status column → small inline bar chart → risks/blockers warn panel → next steps numbered list.
+
+### Example 4 — Exploration / options comparison
+Source: a markdown listing three implementation approaches.
+Pattern: card grid (one card per option) with trade-offs called out inline → summary verdict box.
+
+### Example 5 — Slide deck
+Source: a markdown outline for a presentation.
+Pattern: one `<section>` per slide, arrow-key JS navigation, slide counter pill, no external deps.
 
 ## Anti-patterns to Avoid
 
 - Dumping the markdown 1:1 into HTML with no structural choices.
+- Stopping at "document" layouts when a card grid, diagram, or deck would serve the content better.
 - Loading Tailwind, Bootstrap, highlight.js, or any framework via CDN.
 - Using emojis as section icons.
 - Embedding base64 fonts/images unless the user asked for offline parity with a branded asset.
-- Adding interactivity (search, filters, collapsible sections) unless the content genuinely benefits — most reports don't.
 - Making dark mode a CSS `filter: invert()` hack.
 - Forgetting the early theme-application script (causes a flash on load).

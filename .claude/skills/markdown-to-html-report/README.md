@@ -37,6 +37,10 @@ User asks for any of:
 - The user wants a slide deck or PDF.
 - The platform already renders the markdown well (GitHub, Notion) and the user doesn't want a standalone copy.
 
+## Reference examples
+
+See **https://thariqs.github.io/html-effectiveness/** for 20 live self-contained HTML files an AI agent produced — covering exploration grids, code review diffs, design systems, prototypes, SVG diagrams, slide decks, reports, and custom editors. Use it as a benchmark for layout ambition.
+
 ## Output naming convention
 
 By default, mirror the source markdown's basename:
