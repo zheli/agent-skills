@@ -6,8 +6,8 @@ A Claude skill for tracking project tasks and epics using individual markdown fi
 
 This skill provides a lightweight, file-based project tracking system by:
 - Using `docs/PROJECT.md` as a central index with a status table
-- Creating individual markdown files for each task or epic
-- Following a consistent naming convention: `docs/{ID}-{TYPE}-{title}.md`
+- Creating individual markdown files for each task or epic under `docs/tasks/`
+- Following a consistent naming convention: `docs/tasks/{ID}-{TYPE}-{title}.md`
 - Keeping status in sync between the index and individual files
 - Supporting bootstrapping for new projects and ongoing management
 
@@ -27,10 +27,10 @@ Before using this skill, ensure you have:
 ## Usage
 
 1. Invoke the skill when you need to track project work
-2. If `docs/PROJECT.md` doesn't exist, the skill bootstraps the directory and index file
+2. If `docs/PROJECT.md` doesn't exist, the skill bootstraps the directories and index file
 3. To create a new task or epic:
    - Determine the next available ID
-   - Create `docs/{ID}-{EPIC|TASK}-{kebab-case-title}.md` using the template
+   - Create `docs/tasks/{ID}-{EPIC|TASK}-{kebab-case-title}.md` using the template
    - Add a row to the index table in `docs/PROJECT.md`
 4. Update status in both the individual file and the index table as work progresses
 5. Commit and push all tracking changes before ending a session
@@ -39,9 +39,9 @@ Before using this skill, ensure you have:
 
 | Component | Configuration |
 |-----------|---------------|
-| Directory | `docs/` created if it doesn't exist |
+| Directories | `docs/` and `docs/tasks/` created if they don't exist |
 | Index file | `docs/PROJECT.md` with context and status table |
-| Task files | Individual `docs/{ID}-{TYPE}-{title}.md` files |
+| Task files | Individual `docs/tasks/{ID}-{TYPE}-{title}.md` files |
 | Naming | Zero-padded 3-digit IDs with EPIC or TASK type prefix |
 | Status values | Not started, In progress, Complete |
 
@@ -54,17 +54,17 @@ Before using this skill, ensure you have:
 
 After successful execution:
 - ✅ `docs/PROJECT.md` exists with a context section and status table
-- ✅ Each task or epic has its own file under `docs/`
+- ✅ Each task or epic has its own file under `docs/tasks/`
 - ✅ Status is consistent between the index table and individual files
 - ✅ All tracking changes are committed and pushed to the remote
 
 ## Troubleshooting
 
-### No `docs/` directory exists
-Run the bootstrap step to create `docs/` and `docs/PROJECT.md`.
+### No `docs/tasks/` directory exists
+Run the bootstrap step to create `docs/`, `docs/tasks/`, and `docs/PROJECT.md`.
 
 ### ID conflict
-Always check existing files before assigning an ID. Use `ls docs/[0-9]*` to see all existing IDs and pick the next available number.
+Always check existing files before assigning an ID. Use `ls docs/tasks/[0-9]*` to see all existing IDs and pick the next available number.
 
 ### Status out of sync
 If the index table and individual file disagree on status, the individual file is the source of truth. Update the index to match.
@@ -76,7 +76,7 @@ If the index table grows very long, consider adding section headers to group rel
 
 - **Required tools**: `git`, file read/write access
 - **File format**: Markdown with YAML-like metadata fields
-- **Naming convention**: `{ID}-{TYPE}-{kebab-case-title}.md` (e.g., `001-EPIC-setup-infrastructure.md`)
+- **Naming convention**: `docs/tasks/{ID}-{TYPE}-{kebab-case-title}.md` (e.g., `docs/tasks/001-EPIC-setup-infrastructure.md`)
 - **Status values**: Not started, In progress, Complete
 - **Index file**: `docs/PROJECT.md`
 

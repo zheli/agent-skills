@@ -1,6 +1,6 @@
 ---
 name: markdown-task-tracking
-description: Track project tasks and epics in individual markdown files under docs/, with docs/PROJECT.md as the central index. Supports bootstrapping new projects and managing ongoing work.
+description: Track project tasks and epics in individual markdown files under docs/tasks/, with docs/PROJECT.md as the central index. Supports bootstrapping new projects and managing ongoing work.
 allowed-tools: [Bash, Read, Write, Edit, Glob, Grep]
 ---
 
@@ -9,7 +9,7 @@ allowed-tools: [Bash, Read, Write, Edit, Glob, Grep]
 ## Purpose
 
 Track project tasks and epics using individual markdown files. Each task or epic
-gets its own file under `docs/`, while `docs/PROJECT.md` serves as the central
+gets its own file under `docs/tasks/`, while `docs/PROJECT.md` serves as the central
 index with a status table. This keeps tracking scalable — multiple workstreams
 can be tracked simultaneously without a single file becoming unwieldy.
 
@@ -33,10 +33,10 @@ Use this skill when you need to:
 
 ### File naming
 
-Each task or epic lives in its own file under `docs/`:
+Each task or epic lives in its own file under `docs/tasks/`:
 
 ```
-docs/{ID}-{TYPE}-{kebab-case-title}.md
+docs/tasks/{ID}-{TYPE}-{kebab-case-title}.md
 ```
 
 - **`{ID}`**: Zero-padded 3-digit number (e.g. `001`, `002`, `013`)
@@ -44,9 +44,9 @@ docs/{ID}-{TYPE}-{kebab-case-title}.md
 - **`{title}`**: Kebab-case descriptive title
 
 Examples:
-- `docs/001-EPIC-devnet-validator-deployment.md`
-- `docs/002-TASK-github-action-redeployment.md`
-- `docs/015-TASK-fix-login-redirect-bug.md`
+- `docs/tasks/001-EPIC-devnet-validator-deployment.md`
+- `docs/tasks/002-TASK-github-action-redeployment.md`
+- `docs/tasks/015-TASK-fix-login-redirect-bug.md`
 
 ### Status values
 
@@ -62,8 +62,8 @@ The `docs/PROJECT.md` file contains a table with this structure:
 ```markdown
 | ID | Type | Title | Status | File |
 |----|------|-------|--------|------|
-| 001 | Epic | Example Epic | **🚧 In progress** | [001-EPIC-example-epic.md](001-EPIC-example-epic.md) |
-| 002 | Task | Example Task | ⏳ Not started | [002-TASK-example-task.md](002-TASK-example-task.md) |
+| 001 | Epic | Example Epic | **🚧 In progress** | [001-EPIC-example-epic.md](tasks/001-EPIC-example-epic.md) |
+| 002 | Task | Example Task | ⏳ Not started | [002-TASK-example-task.md](tasks/002-TASK-example-task.md) |
 ```
 
 Bold the status when it is **🚧 In progress** or **✅ Complete** to make active/done
@@ -77,11 +77,11 @@ write a plain-text-only status such as `Not started`, `In progress`, or
 
 ### 1. Bootstrap (if `docs/PROJECT.md` does not exist)
 
-If the repository does not yet have a `docs/PROJECT.md`, create the directory
+If the repository does not yet have a `docs/PROJECT.md`, create the directories
 and index file:
 
 ```bash
-mkdir -p docs
+mkdir -p docs/tasks
 ```
 
 Create `docs/PROJECT.md` with this structure:
@@ -113,7 +113,7 @@ linked in the table below.
 ## How to Add a New Task or Epic
 
 1. Find the next available ID by checking the table above.
-2. Create a new file: `docs/{ID}-{EPIC|TASK}-{kebab-case-title}.md`
+2. Create a new file: `docs/tasks/{ID}-{EPIC|TASK}-{kebab-case-title}.md`
 3. Use the epic/task file template.
 4. Add a row to the **Tasks & Epics** table above.
 ```
@@ -137,8 +137,8 @@ When a new task or epic is identified (by the user or discovered during work):
 **a) Determine the next ID:**
 
 ```bash
-# Look at the highest existing ID in the docs/ directory
-ls docs/[0-9]*-{EPIC,TASK}-*.md 2>/dev/null | sort -t/ -k2 | tail -1
+# Look at the highest existing ID in the docs/tasks/ directory
+ls docs/tasks/[0-9]*-{EPIC,TASK}-*.md 2>/dev/null | sort -t/ -k2 | tail -1
 ```
 
 If the `gh` CLI is available, also check open GitHub pull requests before
@@ -152,9 +152,9 @@ gh pr list --state open --json number,title,headRefName 2>/dev/null
 Scan open PR titles and branch names for existing 3-digit task IDs, such as a
 branch named `003-TASK-...` or a PR title beginning with `003`. Increment by 1,
 zero-pad to 3 digits, and use the first ID that is not already present in
-`docs/` or claimed by an open PR.
+`docs/tasks/` or claimed by an open PR.
 
-**b) Create the file using the template:**
+**b) Create the file at `docs/tasks/{ID}-{TYPE}-{kebab-case-title}.md` using the template:**
 
 ```markdown
 # {ID} — {Title}
@@ -185,14 +185,14 @@ zero-pad to 3 digits, and use the first ID that is not already present in
 **c) Add a row to the index table in `docs/PROJECT.md`:**
 
 ```markdown
-| {ID} | {Type} | {Title} | ⏳ Not started | [{filename}]({filename}) |
+| {ID} | {Type} | {Title} | ⏳ Not started | [{filename}](tasks/{filename}) |
 ```
 
 ### 4. Start work on a task or epic
 
 When beginning work on an item:
 
-1. Open `docs/{ID}-{TYPE}-{title}.md`
+1. Open `docs/tasks/{ID}-{TYPE}-{title}.md`
 2. Change `**Status:**` from `⏳ Not started` to `🚧 In progress`
 3. Update the `**Updated:**` date
 4. Update the matching row in `docs/PROJECT.md` to `**🚧 In progress**`
@@ -210,7 +210,7 @@ As you work, update the task/epic file:
 
 When work is finished:
 
-1. Open `docs/{ID}-{TYPE}-{title}.md`
+1. Open `docs/tasks/{ID}-{TYPE}-{title}.md`
 2. Change `**Status:**` to `✅ Complete`
 3. Update the `**Updated:**` date
 4. Check off all remaining steps
@@ -222,7 +222,7 @@ All changes to tracking files must be committed and pushed to the remote
 repository. Do not leave uncommitted tracking updates at the end of a session.
 
 ```bash
-git add docs/PROJECT.md docs/{ID}-{TYPE}-*.md
+git add docs/PROJECT.md docs/tasks/{ID}-{TYPE}-*.md
 git commit -m "docs: <describe tracking update>"
 git push
 ```
@@ -248,17 +248,17 @@ git push
 
 After using this skill, you should have:
 - A `docs/PROJECT.md` index file with a table of all tracked items
-- Individual `docs/{ID}-{TYPE}-{title}.md` files for each task/epic
+- Individual `docs/tasks/{ID}-{TYPE}-{title}.md` files for each task/epic
 - Status kept in sync between the index and individual files
 - All tracking changes committed and pushed
 
 ## Troubleshooting
 
-### No `docs/` directory exists
+### No `docs/tasks/` directory exists
 Run the bootstrap step (Step 1) to create it.
 
 ### ID conflict
-Always check the existing files before assigning an ID. Use `ls docs/[0-9]*` to
+Always check the existing files before assigning an ID. Use `ls docs/tasks/[0-9]*` to
 see all existing IDs and pick the next one.
 
 ### Status out of sync
