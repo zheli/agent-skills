@@ -119,7 +119,7 @@ Ask the user if the location/filename is not obvious.
 
 - Use the `Write` tool with the full HTML contents (template + customization).
 - Do **not** rely on external CSS, JS, fonts, CDNs, or images. Inline anything required.
-- After writing, briefly tell the user the file path and the layout pattern you chose.
+- After writing, briefly tell the user the layout pattern you chose and output the file as a clickable markdown link using the format `[filename.html](file:///absolute/path/to/filename.html)` so the user can open it directly with a single click. For example: `[report.html](file:///Users/me/project/report.html)`.
 
 ## Hard Requirements
 
