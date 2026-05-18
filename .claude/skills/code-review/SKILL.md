@@ -47,6 +47,8 @@ echo "Reviewing: $BASE_SHA..$HEAD_SHA"
 git diff --stat "$BASE_SHA".."$HEAD_SHA"
 ```
 
+> **Note:** uncommitted or unstaged changes will not appear in the diff. Commit or stash any in-progress work before running the review.
+
 Choose `BASE_SHA` based on the scope of the review:
 - **Single commit**: `git rev-parse HEAD~1`
 - **Feature branch**: `git merge-base origin/main HEAD`
@@ -61,7 +63,7 @@ Identify what to pass as `{DESCRIPTION}` and `{PLAN_OR_REQUIREMENTS}`:
 
 ### 3. Read the Reviewer Template
 
-Read `code-reviewer.md` (in this skill's directory) and fill in the four placeholders:
+Read `code-reviewer.md` — it is in the same directory as this SKILL.md file. Use the `Read` tool with the full path to locate it. Fill in the four placeholders in the content after the first horizontal rule (`---`):
 - `{DESCRIPTION}` → your description from Step 2
 - `{PLAN_OR_REQUIREMENTS}` → your requirements from Step 2
 - `{BASE_SHA}` → from Step 1
@@ -69,12 +71,12 @@ Read `code-reviewer.md` (in this skill's directory) and fill in the four placeho
 
 ### 4. Dispatch the Code Reviewer Subagent
 
-Use the Task tool with `general` subagent type:
+Use the Task tool with `general` subagent type. Pass **everything after the first `---` in `code-reviewer.md`** (with placeholders filled in) as the prompt:
 
 ```
 Task tool (general):
   description: "Review code changes"
-  prompt: <filled-in contents of code-reviewer.md>
+  prompt: <filled-in prompt from code-reviewer.md, starting after the first horizontal rule>
 ```
 
 The subagent will run `git diff` against the SHA range, read the changed files, and return a structured review.
@@ -121,5 +123,5 @@ After the subagent returns:
 
 ## References
 
-- Reviewer prompt template: `code-review/code-reviewer.md`
-- Conventional Commits: https://www.conventionalcommits.org/
+- Reviewer prompt template: `./code-reviewer.md` (same directory as this file)
+- Based on: [obra/superpowers requesting-code-review](https://github.com/obra/superpowers/tree/main/skills/requesting-code-review)
