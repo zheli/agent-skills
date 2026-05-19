@@ -11,6 +11,8 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 ### Git & GitHub Workflow
 
 - **[Git Commit, Push, and Pull Request](./.claude/skills/git-commit-push-pr/)** - Commit all changes, push to remote, and create a GitHub pull request with an auto-generated description.
+- **[Code Review](./.claude/skills/code-review/)** - Dispatch a code reviewer subagent to evaluate completed work against requirements, returning categorized issues (Critical / Important / Minor) and a clear merge verdict.
+
 ### Network Configuration
 
 - **[Configure Hetzner Cloud Floating IP](./.claude/skills/configure-hetzner-floating-ip/)** - Configure a Hetzner Cloud Floating IP persistently on Ubuntu servers using Netplan.
