@@ -31,6 +31,7 @@ Dispatch a code reviewer subagent to evaluate completed work against requirement
 | `{PLAN_OR_REQUIREMENTS}` | What it should do — paste requirements, a plan excerpt, or task text | "Users must be able to reset their password via email link" |
 | `{BASE_SHA}` | Starting commit (exclusive) | `a7981ec` |
 | `{HEAD_SHA}` | Ending commit (inclusive) | `3df7661` |
+| `{TEST_FILE_GLOBS}` | (Optional) Test file patterns for the project | `**/*.spec.ts`, `**/*_test.go` |
 
 ## Steps
 
@@ -53,6 +54,22 @@ Choose `BASE_SHA` based on the scope of the review:
 - **Single commit**: `git rev-parse HEAD~1`
 - **Feature branch**: `git merge-base origin/main HEAD`
 - **Specific range**: use the SHA of the last known-good commit
+
+### 1.5. Gather Test Context
+
+Before dispatching the reviewer, check the test-to-source ratio of the diff:
+
+```bash
+# Source files changed (excluding tests)
+git diff --name-only "$BASE_SHA".."$HEAD_SHA" -- \
+  ':(exclude)*test*' ':(exclude)*spec*' ':(exclude)*_test.*' \
+  ':(exclude)test_*' ':(exclude)__tests__/*'
+
+# Test files changed
+git diff --name-only "$BASE_SHA".."$HEAD_SHA" | grep -E '(test|spec|_test\.|test_|__tests__)'
+```
+
+If the project has a `{TEST_FILE_GLOBS}` pattern, use that instead of the defaults. This context helps the reviewer build the **Test impact map** from `test-review-checklist.md`.
 
 ### 2. Gather Context
 
@@ -98,6 +115,8 @@ If the reviewer is wrong, push back with technical reasoning — show the code o
 After the subagent returns:
 - ✓ Strengths identified (confirms what is working well)
 - ✓ Issues categorized as Critical / Important / Minor with file:line references
+- ✓ **Test impact map** showing test coverage for each changed source file
+- ✓ **Untested changes** list (or confirmation that all behavior is covered)
 - ✓ Clear "Ready to merge?" verdict (Yes / No / With fixes)
 - ✓ Actionable fix guidance for each issue
 
@@ -124,4 +143,5 @@ After the subagent returns:
 ## References
 
 - Reviewer prompt template: `./code-reviewer.md` (same directory as this file)
+- Test review checklist: `./test-review-checklist.md` (same directory as this file)
 - Based on: [obra/superpowers requesting-code-review](https://github.com/obra/superpowers/tree/main/skills/requesting-code-review)

@@ -69,7 +69,9 @@ If the reviewer is wrong, push back with technical reasoning. If the reviewer fl
 After the reviewer subagent returns:
 - Strengths identified (confirms what is working well)
 - Issues categorized as Critical / Important / Minor with file:line references
-- Clear "Ready to merge?" verdict (Yes / No / With fixes)
+- **Test impact map** showing coverage status for each changed source file
+- **Untested changes** list identifying gaps in test coverage
+- Clear "Ready to merge?" verdict (Yes / No / With fixes) — influenced by test gaps
 - Actionable fix guidance for each issue
 
 ## Troubleshooting
@@ -84,6 +86,7 @@ After the reviewer subagent returns:
 
 - **Subagent type**: `general` (Task tool)
 - **Reviewer template**: `code-reviewer.md` in this skill directory
+- **Test review checklist**: `test-review-checklist.md` in this skill directory
 - **Review scope**: git diff between `BASE_SHA` and `HEAD_SHA`, plus full file reads for significantly changed files
 - **Based on**: [obra/superpowers requesting-code-review](https://github.com/obra/superpowers/tree/main/skills/requesting-code-review)
 
