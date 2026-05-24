@@ -56,11 +56,15 @@ git diff {BASE_SHA}..{HEAD_SHA}
 - Security concerns?
 - Integrates cleanly with surrounding code?
 
-**Testing:**
+**Testing & test adequacy:**
+- Consult `test-review-checklist.md` in this directory and follow its full checklist
+- Build the **Test impact map**: for each changed source file, identify whether tests were added, updated, or are missing
 - Tests verify real behavior, not just mocks?
 - Edge cases covered?
 - Integration tests where they matter?
 - All tests passing?
+- New/changed behavior has corresponding new/updated tests?
+- Bug fixes include a regression test?
 
 **Production readiness:**
 - Migration strategy if schema changed?
@@ -77,6 +81,12 @@ If you find significant deviations from the requirements, flag them
 specifically so the implementer can confirm whether the deviation was
 intentional. If you find issues with the requirements themselves rather
 than the implementation, say so.
+
+**Test severity defaults** (from `test-review-checklist.md`):
+- New feature/API without tests → **Important**
+- Bug fix without regression test → **Important**
+- Auth/security/data path without tests → **Critical**
+- PR changes source files but zero test files → flag explicitly
 
 ## Output Format
 
@@ -99,6 +109,15 @@ For each issue:
 - What's wrong
 - Why it matters
 - How to fix (if not obvious)
+
+### Test Impact
+
+| Changed source file | Corresponding test file | Status |
+|---------------------|------------------------|--------|
+| `path/to/file` | `path/to/file.test` | Added / Updated / **Missing** / N/A |
+
+### Untested Changes
+[List each untested function/endpoint/code path as file:line — description. Write "All changed behavior has corresponding tests." if none.]
 
 ### Recommendations
 [Improvements for code quality, architecture, or process that don't rise to the level of issues]
