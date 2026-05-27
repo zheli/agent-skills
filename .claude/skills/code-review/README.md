@@ -6,6 +6,7 @@ A skill for dispatching a code reviewer subagent to evaluate completed work agai
 
 This skill automates the code review workflow by:
 - Determining the correct git SHA range to review
+- Running a read-only PR scope preflight for duplicated main-branch changes, stale cherry-picks, and unexpectedly broad diffs
 - Prompting you to supply a description and requirements
 - Filling in the reviewer prompt template (`code-reviewer.md`)
 - Dispatching a senior code reviewer subagent via the Task tool
@@ -34,8 +35,9 @@ The skill will guide you through:
 1. Determining `BASE_SHA` and `HEAD_SHA`
 2. Writing a brief description of what was built
 3. Supplying the requirements or plan the work was built against
-4. Dispatching the reviewer subagent
-5. Triaging the returned feedback
+4. Dispatching a read-only PR scope preflight subagent
+5. Dispatching the reviewer subagent
+6. Triaging the returned feedback
 
 No configuration files are required.
 
@@ -44,6 +46,7 @@ No configuration files are required.
 | Component | Details |
 |---|---|
 | Git range | `BASE_SHA..HEAD_SHA` — determined from your current branch |
+| PR scope preflight | Read-only `general` subagent checks for duplicate main changes, stale cherry-picks, and scope drift before review |
 | Review context | Description + requirements you provide |
 | Reviewer prompt | Filled from `code-reviewer.md` template |
 | Subagent type | `general` via the Task tool |
@@ -67,6 +70,8 @@ If the reviewer is wrong, push back with technical reasoning. If the reviewer fl
 ## Expected Results
 
 After the reviewer subagent returns:
+- PR scope preflight completed, or explicitly skipped with user approval
+- Duplicated main-branch changes, stale cherry-picks, or oversized diffs identified before review
 - Strengths identified (confirms what is working well)
 - Issues categorized as Critical / Important / Minor with file:line references
 - **Test impact map** showing coverage status for each changed source file
@@ -79,12 +84,14 @@ After the reviewer subagent returns:
 | Problem | Solution |
 |---|---|
 | "No changes found" | Verify SHAs with `git log --oneline "$BASE_SHA".."$HEAD_SHA"` |
+| Preflight blocks review | Rebase, drop duplicate cherry-picks, split the PR, create a fresh PR, or proceed only after explicit user confirmation |
 | Feedback is too generic | Provide more specific requirements — paste actual acceptance criteria |
 | Subagent can't access repo | Confirm working directory is repo root: `git rev-parse --show-toplevel` |
 
 ## Technical Details
 
 - **Subagent type**: `general` (Task tool)
+- **Preflight subagent**: read-only scope check runs before the reviewer and can block noisy reviews until the user chooses how to proceed
 - **Reviewer template**: `code-reviewer.md` in this skill directory
 - **Test review checklist**: `test-review-checklist.md` in this skill directory
 - **Review scope**: git diff between `BASE_SHA` and `HEAD_SHA`, plus full file reads for significantly changed files
