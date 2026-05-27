@@ -55,7 +55,7 @@ Choose `BASE_SHA` based on the scope of the review:
 - **Feature branch**: `git merge-base origin/main HEAD`
 - **Specific range**: use the SHA of the last known-good commit
 
-### 1.25. Run PR Scope Preflight
+### 2. Run PR Scope Preflight
 
 Before dispatching the code reviewer, dispatch a separate read-only Task subagent to check whether the PR diff is reviewable and scoped correctly. This catches noisy reviews where a branch contains duplicated cherry-picks from `main`, stale replayed commits, or a much broader diff than the PR description claims.
 
@@ -111,7 +111,7 @@ If the preflight verdict is **Needs attention**, summarize the concern and ask b
 
 Preflight must not rely only on commit SHAs: squash merges, cherry-picks, rebases, and backports can make commit identity misleading. Ask the subagent to compare content, file scope, and PR description as well as commit history.
 
-### 1.5. Gather Test Context
+### 3. Gather Test Context
 
 Before dispatching the reviewer, check the test-to-source ratio of the diff:
 
@@ -127,14 +127,14 @@ git diff --name-only "$BASE_SHA".."$HEAD_SHA" | grep -E '(test|spec|_test\.|test
 
 If the project has a `{TEST_FILE_GLOBS}` pattern, use that instead of the defaults. This context helps the reviewer build the **Test impact map** from `test-review-checklist.md`.
 
-### 2. Gather Context
+### 4. Gather Context
 
 Identify what to pass as `{DESCRIPTION}` and `{PLAN_OR_REQUIREMENTS}`:
 
 - **Description**: 1-2 sentences summarizing what you built (functions added, behavior changed, files affected)
 - **Plan or requirements**: paste the task text, acceptance criteria, or relevant section of a plan document. A file path is fine if the reviewer subagent can read it.
 
-### 3. Read the Reviewer Template
+### 5. Read the Reviewer Template
 
 Read `code-reviewer.md` — it is in the same directory as this SKILL.md file. Use the `Read` tool with the full path to locate it. Fill in the four placeholders in the content after the first horizontal rule (`---`):
 - `{DESCRIPTION}` → your description from Step 2
@@ -142,7 +142,7 @@ Read `code-reviewer.md` — it is in the same directory as this SKILL.md file. U
 - `{BASE_SHA}` → from Step 1
 - `{HEAD_SHA}` → from Step 1
 
-### 4. Dispatch the Code Reviewer Subagent
+### 6. Dispatch the Code Reviewer Subagent
 
 Use the Task tool with `general` subagent type. Pass **everything after the first `---` in `code-reviewer.md`** (with placeholders filled in) as the prompt:
 
@@ -154,7 +154,7 @@ Task tool (general):
 
 The subagent will run `git diff` against the SHA range, read the changed files, and return a structured review.
 
-### 5. Act on Feedback
+### 7. Act on Feedback
 
 Triage the reviewer's findings by severity:
 
