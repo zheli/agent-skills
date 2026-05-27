@@ -55,6 +55,62 @@ Choose `BASE_SHA` based on the scope of the review:
 - **Feature branch**: `git merge-base origin/main HEAD`
 - **Specific range**: use the SHA of the last known-good commit
 
+### 1.25. Run PR Scope Preflight
+
+Before dispatching the code reviewer, dispatch a separate read-only Task subagent to check whether the PR diff is reviewable and scoped correctly. This catches noisy reviews where a branch contains duplicated cherry-picks from `main`, stale replayed commits, or a much broader diff than the PR description claims.
+
+First identify `{DESCRIPTION}` and `{PLAN_OR_REQUIREMENTS}` using the guidance in Step 2. If they are not known yet, pause and gather them before running this preflight; the scope check needs the intended change to compare against the actual diff.
+
+Use the Task tool with `general` subagent type:
+
+```
+Task tool (general):
+  description: "Check PR scope before review"
+  prompt: |
+    You are doing a read-only PR scope preflight before code review.
+
+    Git range:
+    Base: {BASE_SHA}
+    Head: {HEAD_SHA}
+
+    Description:
+    {DESCRIPTION}
+
+    Requirements / PR description:
+    {PLAN_OR_REQUIREMENTS}
+
+    Check for:
+    1. Duplicated changes already present on origin/main or the merge-base target.
+    2. Stale cherry-picks or replayed commits that reintroduce code already merged.
+    3. A diff that is materially broader than the description or requirements.
+    4. Unrelated file churn, generated files, lockfile/vendor updates, formatting-only rewrites, or large moves/renames that obscure the intended change.
+
+    Run only read-only git/file inspection commands. Suggested commands:
+    - git log --oneline --cherry-pick --right-only origin/main...HEAD
+    - git cherry -v origin/main HEAD
+    - git diff --stat {BASE_SHA}..{HEAD_SHA}
+    - git diff --name-status {BASE_SHA}..{HEAD_SHA}
+    - git diff --find-renames {BASE_SHA}..{HEAD_SHA}
+    - git log --oneline --decorate {BASE_SHA}..{HEAD_SHA}
+
+    If this is a GitHub PR and the PR number or URL is known, also inspect read-only PR metadata such as title, body, base branch, head branch, commit list, changed files, and merge state.
+
+    Return:
+    - Scope verdict: Clean / Needs attention / Block review
+    - Duplicate or stale changes found, with evidence
+    - Files or commits that appear unrelated to the description
+    - Recommended action before code review: proceed, narrow the range, rebase, split PR, create a fresh PR, update description, or stop
+```
+
+If the preflight verdict is **Block review**, stop before Step 4 and offer the user these choices:
+- Clean up or rebase the existing PR first
+- Create a fresh PR with only the real changes
+- Proceed with the noisy review anyway
+
+If the preflight verdict is **Needs attention**, summarize the concern and ask before dispatching the code reviewer unless the user already explicitly requested reviewing despite stale or duplicated changes.
+
+Preflight must not rely only on commit SHAs: squash merges, cherry-picks, rebases, and backports can make commit identity misleading. Ask the subagent to compare content, file scope, and PR description as well as commit history.
+
 ### 1.5. Gather Test Context
 
 Before dispatching the reviewer, check the test-to-source ratio of the diff:
@@ -113,6 +169,8 @@ If the reviewer is wrong, push back with technical reasoning — show the code o
 ## Expected Results
 
 After the subagent returns:
+- ✓ PR scope preflight completed, or explicitly skipped with user approval
+- ✓ Duplicated main-branch changes, stale cherry-picks, or oversized diffs identified before review
 - ✓ Strengths identified (confirms what is working well)
 - ✓ Issues categorized as Critical / Important / Minor with file:line references
 - ✓ **Test impact map** showing test coverage for each changed source file
@@ -131,6 +189,11 @@ After the subagent returns:
 ### Reviewer says "no changes found"
 - Verify `BASE_SHA` and `HEAD_SHA` are correct: `git log --oneline "$BASE_SHA".."$HEAD_SHA"`
 - Ensure the commits exist locally: `git fetch origin` if reviewing remote commits
+
+### Preflight says the PR is stale or duplicated
+- Prefer cleaning up the PR before review: rebase on the target branch, drop duplicated cherry-picks, or create a fresh branch with only the intended changes
+- If the duplication is intentional, such as a backport or release-branch cherry-pick, document that in `{PLAN_OR_REQUIREMENTS}` and proceed only after the user confirms
+- If the PR description is narrower than the diff, ask the user whether to split the PR, update the description, or review only a narrower SHA range
 
 ### Reviewer feedback is too generic
 - Provide more specific `{PLAN_OR_REQUIREMENTS}` — paste the actual acceptance criteria rather than a vague summary
