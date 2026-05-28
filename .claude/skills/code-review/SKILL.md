@@ -103,9 +103,23 @@ Task tool (general):
 ```
 
 If the preflight verdict is **Block review**, stop before Step 4 and offer the user these choices:
-- Clean up or rebase the existing PR first
+- Create a local backup branch, then clean up or rebase the existing PR first
 - Create a fresh PR with only the real changes
 - Proceed with the noisy review anyway
+
+Before offering to clean up duplicated code, stale cherry-picks, or replayed commits in an existing PR, always create a local backup branch from the current HEAD:
+
+```bash
+# Preserve the current PR state before any cleanup, rebase, or history rewrite
+BACKUP_BRANCH="backup/pr-cleanup-$(date +%Y%m%d-%H%M%S)"
+git branch "$BACKUP_BRANCH" HEAD
+
+# Verify the backup branch points at the current PR HEAD
+git rev-parse "$BACKUP_BRANCH"
+git rev-parse HEAD
+```
+
+Tell the user the backup branch name before making cleanup changes. Do not delete the backup branch during the review session unless the user explicitly asks.
 
 If the preflight verdict is **Needs attention**, summarize the concern and ask before dispatching the code reviewer unless the user already explicitly requested reviewing despite stale or duplicated changes.
 
@@ -191,7 +205,7 @@ After the subagent returns:
 - Ensure the commits exist locally: `git fetch origin` if reviewing remote commits
 
 ### Preflight says the PR is stale or duplicated
-- Prefer cleaning up the PR before review: rebase on the target branch, drop duplicated cherry-picks, or create a fresh branch with only the intended changes
+- Prefer cleaning up the PR before review: create a local backup branch first, then rebase on the target branch, drop duplicated cherry-picks, or create a fresh branch with only the intended changes
 - If the duplication is intentional, such as a backport or release-branch cherry-pick, document that in `{PLAN_OR_REQUIREMENTS}` and proceed only after the user confirms
 - If the PR description is narrower than the diff, ask the user whether to split the PR, update the description, or review only a narrower SHA range
 
