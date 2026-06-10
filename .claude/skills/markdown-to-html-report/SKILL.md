@@ -15,6 +15,8 @@ The skill produces:
 - A **single `.html` file** with no external CSS, JS, fonts, or image dependencies (works offline; safe to email/attach).
 - A **light/dark mode toggle** in the top-right that respects `prefers-color-scheme` on first load and persists the user's choice in `localStorage`.
 - A **layout chosen to match the content** — not a one-size-fits-all dump.
+- Optional **GitHub Pages publishing** when the user wants the generated page deployed to a Pages repository.
+- Optional **password-protected encrypted output** using browser-native AES-GCM when the page will be stored in a public or semi-public location.
 
 ## Reference
 
@@ -28,6 +30,8 @@ Use this skill when the user asks for any of:
 - "Make this markdown easier to read"
 - "Generate a companion HTML for my answer"
 - "Render this as a webpage"
+- "Publish this report to GitHub Pages"
+- "Make the HTML page password protected"
 - A polished review/decision/explainer/diagram/deck artifact derived from markdown content
 
 Do **not** use this skill when:
@@ -121,6 +125,59 @@ Ask the user if the location/filename is not obvious.
 - Do **not** rely on external CSS, JS, fonts, CDNs, or images. Inline anything required.
 - After writing, briefly tell the user the layout pattern you chose and output the file as a clickable markdown link using the format `[filename.html](file:///absolute/path/to/filename.html)` so the user can open it directly with a single click. For example: `[report.html](file:///Users/me/project/report.html)`.
 
+### Step 6 — Offer publishing and protection options
+
+After the local HTML file exists, offer follow-up choices when the user has not already specified a destination:
+
+1. Keep the HTML file local only.
+2. Publish the HTML file to an existing local GitHub Pages repository.
+3. Clone a GitHub Pages repository, then publish the HTML file there.
+4. Create a password-protected encrypted page before publishing or sharing.
+
+Ask only for the missing information needed to proceed:
+
+- GitHub Pages repository URL or `owner/repo`.
+- Local clone path, if the user already has one.
+- Target path inside the Pages repository, such as `reports/report.html` or `index.html`.
+- Whether to publish the plain HTML file or the encrypted wrapper.
+
+If a likely local Pages repository is not obvious, search nearby workspaces with `Glob` or ask the user for the path. If the repository is not cloned locally, offer to clone it before publishing. Do not clone, commit, or push without the user's explicit choice.
+
+### Step 7 — Publish to GitHub Pages when requested
+
+When the user chooses GitHub Pages publishing:
+
+1. Verify the target repository is a Git repository and check `git status --short --branch` before changing it.
+2. Confirm the Pages target path if overwriting an existing file.
+3. Copy the generated `.html` file into the requested path in the Pages repository.
+4. If the Pages repository uses a build step, run only the documented build or preview command for that repository. Do not add a static site generator for a single self-contained page unless the user asks.
+5. Run a lightweight verification, such as checking that the target file exists and contains `<!DOCTYPE html>`.
+6. Commit the Pages repository change with a Conventional Commit, for example `docs: publish html report`.
+7. Push only after the user selected publishing. If the target branch is `main` or `master`, ask before pushing unless the user already asked for a push.
+
+Keep the source repository and Pages repository changes separate. Do not mix commits across repositories.
+
+### Step 8 — Create a password-protected encrypted page when requested
+
+Use encrypted output when the user wants the HTML page to be password protected, especially before publishing to a public GitHub Pages repository.
+
+Implementation requirements:
+
+1. Generate the normal self-contained HTML report first.
+2. Wrap the report in a second self-contained HTML file with a password form, browser-native Web Crypto API code, `PBKDF2` key derivation, `AES-GCM` decryption, and embedded ciphertext plus non-secret encryption metadata.
+3. Keep the password out of the generated file. Store only the encrypted payload and non-secret encryption metadata.
+4. Use a strong KDF iteration count appropriate for browser use, such as 250,000 or higher, unless performance testing shows it is too slow for the target readers.
+5. Decrypt entirely in the browser after the user enters the password, then replace the document body with the decrypted report.
+6. Preserve the no-network-dependency requirement. The encrypted wrapper must not load external scripts, styles, fonts, or images.
+7. Test with the intended password locally before publishing, but never print or persist the password in logs, commit messages, PR text, issue text, or shell history.
+
+Security limitations to explain to the user:
+
+- This protects the report content at rest in a public repository if the password is strong and kept private.
+- It does not hide the existence of the page, repository history, filename, file size, or any metadata left in the unencrypted wrapper.
+- It cannot revoke access for anyone who already has the HTML file and password.
+- If the plaintext report was previously committed or published, encrypting a later version does not remove the old plaintext from Git history or caches.
+
 ## Hard Requirements
 
 1. **Single file.** Everything (CSS, JS, content) inline in one `.html` file.
@@ -132,6 +189,8 @@ Ask the user if the location/filename is not obvious.
 7. **Responsive.** Works down to ~360px wide. Tables can scroll horizontally on narrow screens.
 8. **No emojis** unless the source markdown explicitly contains them or the user asks.
 9. **Preserve source meaning.** Do not invent facts not in the markdown. Compress prose where helpful, but never add new claims, numbers, or quotes.
+10. **Publishing is opt-in.** Do not clone, commit to, or push a GitHub Pages repository unless the user chooses that workflow.
+11. **Passwords are secrets.** Never echo, log, commit, or include a page password in generated documentation, PR text, shell history, or comments.
 
 ## Recommended Visual System
 
@@ -178,6 +237,16 @@ Pattern: card grid (one card per option) with trade-offs called out inline → s
 Source: a markdown outline for a presentation.
 Pattern: one `<section>` per slide, arrow-key JS navigation, slide counter pill, no external deps.
 
+### Example 6 — GitHub Pages report
+Source: `report.md`.
+Pattern: generate `report.html`, then ask whether to copy it to an existing Pages repository or clone `owner/repo` first.
+Output: `reports/report.html` committed and pushed in the Pages repository after user confirmation.
+
+### Example 7 — Password-protected Pages report
+Source: `private-review.md`.
+Pattern: generate the normal report, encrypt the complete HTML payload with AES-GCM, and publish only the encrypted wrapper to GitHub Pages.
+Output: a standalone password prompt page that decrypts the report in-browser with no network dependencies.
+
 ## Anti-patterns to Avoid
 
 - Dumping the markdown 1:1 into HTML with no structural choices.
@@ -187,3 +256,5 @@ Pattern: one `<section>` per slide, arrow-key JS navigation, slide counter pill,
 - Embedding base64 fonts/images unless the user asked for offline parity with a branded asset.
 - Making dark mode a CSS `filter: invert()` hack.
 - Forgetting the early theme-application script (causes a flash on load).
+- Publishing plaintext to GitHub Pages when the user requested password protection.
+- Treating client-side password protection as access control for weak or reused passwords.
