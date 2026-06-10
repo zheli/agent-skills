@@ -24,7 +24,7 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 
 ### Documentation & Reporting
 
-- **[Markdown to HTML Report](./.claude/skills/markdown-to-html-report/)** - Generate a self-contained, human-friendly companion HTML report from a markdown document, with light/dark mode toggle and no external dependencies.
+- **[Markdown to HTML Report](./.claude/skills/markdown-to-html-report/)** - Generate a self-contained, human-friendly companion HTML report from a markdown document, with optional GitHub Pages publishing and AES-GCM password protection.
 
 ## Adding Skills
 
