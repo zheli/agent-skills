@@ -29,6 +29,7 @@ Dispatch a code reviewer subagent to evaluate completed work against requirement
 |---|---|---|
 | `{DESCRIPTION}` | Brief summary of what was built | "Added verifyIndex() and repairIndex() with 4 issue types" |
 | `{PLAN_OR_REQUIREMENTS}` | What it should do — paste requirements, a plan excerpt, or task text | "Users must be able to reset their password via email link" |
+| `{PROJECT_INSTRUCTIONS}` | Latest base-branch project instructions that constrain review findings | `git show origin/main:AGENTS.md` |
 | `{BASE_SHA}` | Starting commit (exclusive) | `a7981ec` |
 | `{HEAD_SHA}` | Ending commit (inclusive) | `3df7661` |
 | `{TEST_FILE_GLOBS}` | (Optional) Test file patterns for the project | `**/*.spec.ts`, `**/*_test.go` |
@@ -55,11 +56,39 @@ Choose `BASE_SHA` based on the scope of the review:
 - **Feature branch**: `git merge-base origin/main HEAD`
 - **Specific range**: use the SHA of the last known-good commit
 
-### 2. Run PR Scope Preflight
+### 2. Gather Latest Base Project Instructions
+
+Before dispatching either subagent, gather the target branch's latest project instructions. Reviewers must evaluate findings against the policy that will apply after merge, not stale instructions from the working tree or an older stacked base.
+
+If this is a GitHub PR, prefer the PR base branch from GitHub metadata. Otherwise use `origin/main`, `origin/master`, or the chosen review base branch.
+
+```bash
+# If reviewing a GitHub PR, use its actual base branch.
+BASE_REF=$(gh pr view <PR_NUMBER_OR_URL> --json baseRefName --jq .baseRefName 2>/dev/null || true)
+
+# Fall back to the repository's main branch naming.
+if [ -z "$BASE_REF" ]; then
+  if git rev-parse --verify origin/main >/dev/null 2>&1; then
+    BASE_REF=main
+  else
+    BASE_REF=master
+  fi
+fi
+
+# Refresh and read the latest base-branch AGENTS.md when present.
+git fetch origin "$BASE_REF"
+git show "origin/$BASE_REF:AGENTS.md" 2>/dev/null || { test -f AGENTS.md && sed -n '1,240p' AGENTS.md; }
+```
+
+Set `{PROJECT_INSTRUCTIONS}` to the command output, including the source ref used (for example, `origin/main:AGENTS.md`). If no `AGENTS.md` exists, set it to `No AGENTS.md found in origin/<base> or working tree.`
+
+If `AGENTS.md` changed inside the PR range or differs from the latest base-branch instructions, do not silently choose one policy when the difference could affect review findings. Summarize the conflict and ask the user which instruction set to apply before dispatching the reviewer. If the difference is immaterial to the review, mention it briefly and proceed with the latest base-branch instructions.
+
+### 3. Run PR Scope Preflight
 
 Before dispatching the code reviewer, dispatch a separate read-only Task subagent to check whether the PR diff is reviewable and scoped correctly. This catches noisy reviews where a branch contains duplicated cherry-picks from `main`, stale replayed commits, or a much broader diff than the PR description claims.
 
-First identify `{DESCRIPTION}` and `{PLAN_OR_REQUIREMENTS}` using the guidance in Step 2. If they are not known yet, pause and gather them before running this preflight; the scope check needs the intended change to compare against the actual diff.
+First identify `{DESCRIPTION}` and `{PLAN_OR_REQUIREMENTS}` using the guidance in Step 5. If they are not known yet, pause and gather them before running this preflight; the scope check needs the intended change to compare against the actual diff.
 
 Use the Task tool with `general` subagent type:
 
@@ -79,11 +108,15 @@ Task tool (general):
     Requirements / PR description:
     {PLAN_OR_REQUIREMENTS}
 
+    Latest base-branch project instructions:
+    {PROJECT_INSTRUCTIONS}
+
     Check for:
     1. Duplicated changes already present on origin/main or the merge-base target.
     2. Stale cherry-picks or replayed commits that reintroduce code already merged.
     3. A diff that is materially broader than the description or requirements.
     4. Unrelated file churn, generated files, lockfile/vendor updates, formatting-only rewrites, or large moves/renames that obscure the intended change.
+    5. Whether latest base-branch project instructions introduce constraints that affect review scope or likely findings.
 
     Run only read-only git/file inspection commands. Suggested commands:
     - git log --oneline --cherry-pick --right-only origin/main...HEAD
@@ -92,6 +125,7 @@ Task tool (general):
     - git diff --name-status {BASE_SHA}..{HEAD_SHA}
     - git diff --find-renames {BASE_SHA}..{HEAD_SHA}
     - git log --oneline --decorate {BASE_SHA}..{HEAD_SHA}
+    - git diff --name-only {BASE_SHA}..{HEAD_SHA} -- AGENTS.md '**/AGENTS.md'
 
     If this is a GitHub PR and the PR number or URL is known, also inspect read-only PR metadata such as title, body, base branch, head branch, commit list, changed files, and merge state.
 
@@ -99,6 +133,7 @@ Task tool (general):
     - Scope verdict: Clean / Needs attention / Block review
     - Duplicate or stale changes found, with evidence
     - Files or commits that appear unrelated to the description
+    - Project-instruction constraints that the reviewer must account for
     - Recommended action before code review: proceed, narrow the range, rebase, split PR, create a fresh PR, update description, or stop
 ```
 
@@ -125,7 +160,7 @@ If the preflight verdict is **Needs attention**, summarize the concern and ask b
 
 Preflight must not rely only on commit SHAs: squash merges, cherry-picks, rebases, and backports can make commit identity misleading. Ask the subagent to compare content, file scope, and PR description as well as commit history.
 
-### 3. Gather Test Context
+### 4. Gather Test Context
 
 Before dispatching the reviewer, check the test-to-source ratio of the diff:
 
@@ -141,22 +176,23 @@ git diff --name-only "$BASE_SHA".."$HEAD_SHA" | grep -E '(test|spec|_test\.|test
 
 If the project has a `{TEST_FILE_GLOBS}` pattern, use that instead of the defaults. This context helps the reviewer build the **Test impact map** from `test-review-checklist.md`.
 
-### 4. Gather Context
+### 5. Gather Context
 
 Identify what to pass as `{DESCRIPTION}` and `{PLAN_OR_REQUIREMENTS}`:
 
 - **Description**: 1-2 sentences summarizing what you built (functions added, behavior changed, files affected)
 - **Plan or requirements**: paste the task text, acceptance criteria, or relevant section of a plan document. A file path is fine if the reviewer subagent can read it.
 
-### 5. Read the Reviewer Template
+### 6. Read the Reviewer Template
 
-Read `code-reviewer.md` — it is in the same directory as this SKILL.md file. Use the `Read` tool with the full path to locate it. Fill in the four placeholders in the content after the first horizontal rule (`---`):
-- `{DESCRIPTION}` → your description from Step 2
-- `{PLAN_OR_REQUIREMENTS}` → your requirements from Step 2
+Read `code-reviewer.md` — it is in the same directory as this SKILL.md file. Use the `Read` tool with the full path to locate it. Fill in the five placeholders in the content after the first horizontal rule (`---`):
+- `{DESCRIPTION}` → your description from Step 5
+- `{PLAN_OR_REQUIREMENTS}` → your requirements from Step 5
+- `{PROJECT_INSTRUCTIONS}` → latest base-branch project instructions from Step 2
 - `{BASE_SHA}` → from Step 1
 - `{HEAD_SHA}` → from Step 1
 
-### 6. Dispatch the Code Reviewer Subagent
+### 7. Dispatch the Code Reviewer Subagent
 
 Use the Task tool with `general` subagent type. Pass **everything after the first `---` in `code-reviewer.md`** (with placeholders filled in) as the prompt:
 
@@ -168,7 +204,7 @@ Task tool (general):
 
 The subagent will run `git diff` against the SHA range, read the changed files, and return a structured review.
 
-### 7. Act on Feedback
+### 8. Act on Feedback
 
 Triage the reviewer's findings by severity:
 
@@ -180,11 +216,14 @@ Triage the reviewer's findings by severity:
 
 If the reviewer is wrong, push back with technical reasoning — show the code or tests that prove it works. If the review flags an issue with the plan rather than the implementation, note it separately.
 
+Before passing findings to the user, validate any convention, infrastructure-command, teardown, architecture, or testing-policy finding against `{PROJECT_INSTRUCTIONS}`. If latest base `AGENTS.md` explicitly permits or requires the pattern, do not forward it as a defect; either drop it or reframe any remaining uncertainty as a question.
+
 ## Expected Results
 
 After the subagent returns:
 - ✓ PR scope preflight completed, or explicitly skipped with user approval
 - ✓ Duplicated main-branch changes, stale cherry-picks, or oversized diffs identified before review
+- ✓ Latest base-branch `AGENTS.md` / project instructions supplied to the reviewer
 - ✓ Strengths identified (confirms what is working well)
 - ✓ Issues categorized as Critical / Important / Minor with file:line references
 - ✓ **Test impact map** showing test coverage for each changed source file
