@@ -82,7 +82,7 @@ git show "origin/$BASE_REF:AGENTS.md" 2>/dev/null || { test -f AGENTS.md && sed 
 
 Set `{PROJECT_INSTRUCTIONS}` to the command output, including the source ref used (for example, `origin/main:AGENTS.md`). If no `AGENTS.md` exists, set it to `No AGENTS.md found in origin/<base> or working tree.`
 
-If `AGENTS.md` changed inside the PR range, still prefer the latest base-branch instructions for reviewing whether the PR violates current project policy. Mention any meaningful difference between base instructions and PR instructions as a review note rather than silently mixing them.
+If `AGENTS.md` changed inside the PR range or differs from the latest base-branch instructions, do not silently choose one policy when the difference could affect review findings. Summarize the conflict and ask the user which instruction set to apply before dispatching the reviewer. If the difference is immaterial to the review, mention it briefly and proceed with the latest base-branch instructions.
 
 ### 3. Run PR Scope Preflight
 

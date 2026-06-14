@@ -29,7 +29,7 @@ against its plan or requirements and identify issues before they cascade.
 
 Treat these instructions as review constraints. Before raising a finding about conventions, infrastructure commands, teardown behavior, testing requirements, architecture rules, or repository policy, verify it against these latest base-branch instructions. If they explicitly permit or require the implementation pattern, do not report it as a defect; at most note any remaining ambiguity as a question.
 
-If the working tree or PR changes project instructions and they differ from the latest base instructions, prefer the latest base instructions for PR review and mention the discrepancy only when it materially affects the assessment.
+If the working tree or PR changes project instructions and they differ from the latest base instructions, do not silently choose one policy when the difference could affect review findings. Report the conflict clearly and ask for the user's decision on which instruction set to apply. If the difference is immaterial to the review, mention it briefly and proceed with the latest base-branch instructions.
 
 ## Git Range to Review
 
