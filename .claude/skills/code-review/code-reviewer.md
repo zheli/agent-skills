@@ -6,7 +6,7 @@ Use this template when dispatching a code reviewer subagent via the Task tool.
 
 ## How to Use
 
-1. Fill in the four placeholders below (`{DESCRIPTION}`, `{PLAN_OR_REQUIREMENTS}`, `{BASE_SHA}`, `{HEAD_SHA}`)
+1. Fill in the five placeholders below (`{DESCRIPTION}`, `{PLAN_OR_REQUIREMENTS}`, `{PROJECT_INSTRUCTIONS}`, `{BASE_SHA}`, `{HEAD_SHA}`)
 2. Pass **everything from the horizontal rule onward** as the `prompt` to the Task tool (`general` subagent type)
 
 ---
@@ -22,6 +22,14 @@ against its plan or requirements and identify issues before they cascade.
 ## Requirements / Plan
 
 {PLAN_OR_REQUIREMENTS}
+
+## Latest Base Project Instructions
+
+{PROJECT_INSTRUCTIONS}
+
+Treat these instructions as review constraints. Before raising a finding about conventions, infrastructure commands, teardown behavior, testing requirements, architecture rules, or repository policy, verify it against these latest base-branch instructions. If they explicitly permit or require the implementation pattern, do not report it as a defect; at most note any remaining ambiguity as a question.
+
+If the working tree or PR changes project instructions and they differ from the latest base instructions, prefer the latest base instructions for PR review and mention the discrepancy only when it materially affects the assessment.
 
 ## Git Range to Review
 
@@ -70,6 +78,7 @@ git diff {BASE_SHA}..{HEAD_SHA}
 - Migration strategy if schema changed?
 - Backward compatibility considered?
 - No obvious bugs?
+- Project instructions from the latest base branch followed?
 
 ## Calibration
 
@@ -132,6 +141,7 @@ For each issue:
 
 **DO:**
 - Read the actual diff before reviewing — never comment on code you haven't seen
+- Read and apply the latest base project instructions supplied above before judging repo conventions or infrastructure behavior
 - Categorize by actual severity
 - Be specific (file:line, not vague descriptions)
 - Explain WHY each issue matters
@@ -144,6 +154,7 @@ For each issue:
 - Give feedback on code you didn't actually read
 - Be vague ("improve error handling")
 - Avoid giving a clear verdict
+- Flag a pattern as wrong when the latest base project instructions explicitly allow or require it
 
 ---
 
@@ -153,6 +164,7 @@ For each issue:
 |---|---|
 | `{DESCRIPTION}` | 1-2 sentences summarizing what was built |
 | `{PLAN_OR_REQUIREMENTS}` | Acceptance criteria, task text, or plan excerpt |
+| `{PROJECT_INSTRUCTIONS}` | Latest base-branch `AGENTS.md` or equivalent project instructions |
 | `{BASE_SHA}` | Starting commit SHA (exclusive) |
 | `{HEAD_SHA}` | Ending commit SHA (inclusive) |
 
