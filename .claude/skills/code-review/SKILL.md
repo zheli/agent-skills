@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: Dispatch a code reviewer subagent to catch issues before they cascade. Use after completing features, fixing complex bugs, or before merging.
-allowed-tools: [Bash, Read, Grep, Task]
+allowed-tools: [Bash, Read, Grep, Task, AskUserQuestion]
 ---
 
 # Code Review
@@ -11,6 +11,7 @@ Dispatch a code reviewer subagent to evaluate completed work against requirement
 ## Prerequisites
 - Git repository with at least two commits (so there is a diff range to review)
 - Clear description of what was implemented and what it was supposed to do
+- Optional, for posting GitHub PR review comments: GitHub CLI (`gh`) installed and authenticated
 
 ## When to Use
 
@@ -33,6 +34,11 @@ Dispatch a code reviewer subagent to evaluate completed work against requirement
 | `{BASE_SHA}` | Starting commit (exclusive) | `a7981ec` |
 | `{HEAD_SHA}` | Ending commit (inclusive) | `3df7661` |
 | `{TEST_FILE_GLOBS}` | (Optional) Test file patterns for the project | `**/*.spec.ts`, `**/*_test.go` |
+| `{PR_NUMBER_OR_URL}` | (Optional) GitHub pull request number or URL when preparing PR review comments | `123`, `https://github.com/org/repo/pull/123` |
+| `<PR_NUMBER>` | GitHub pull request number used in `gh api` review calls | `123` |
+| `<COMMIT_SHA>` | Latest pull request commit SHA used as the GitHub review `commit_id` | `3df7661` |
+| `<REVIEW_ID>` | Pending GitHub review ID returned by the create-review API call | `987654321` |
+| `<REDACTED>` | Placeholder for secrets or sensitive data that must not be pasted into review context | `<REDACTED>` |
 
 ## Steps
 
@@ -218,6 +224,88 @@ If the reviewer is wrong, push back with technical reasoning — show the code o
 
 Before passing findings to the user, validate any convention, infrastructure-command, teardown, architecture, or testing-policy finding against `{PROJECT_INSTRUCTIONS}`. If latest base `AGENTS.md` explicitly permits or requires the pattern, do not forward it as a defect; either drop it or reframe any remaining uncertainty as a question.
 
+### 9. Optional: Prepare GitHub PR Review Comments
+
+After presenting the local review, ask the user whether they want GitHub PR review comments prepared from the findings. Do **not** create, submit, or publish GitHub review comments automatically.
+
+Use AskUserQuestion or the available equivalent user-question tool:
+
+```
+Question: "Do you want me to prepare GitHub PR review comments from these findings?"
+Header: "GitHub Review Comments"
+Options:
+  - Yes, prepare draft comments: Drafts PR review comments for user approval
+  - No, keep review local: Stops without using GitHub review APIs
+```
+
+If the user declines, stop after the local review. If the user agrees, prepare draft comments only:
+- Convert only actionable Critical and Important findings, or user-selected Minor findings, into GitHub comments.
+- Skip generic praise, broad recommendations, and findings without a valid changed-file line reference.
+- Prefer one concise comment per issue; combine duplicates that point to the same root cause.
+- Use suggestion fenced code blocks only when the replacement is exact, complete, and safe for the selected line or line range.
+- Choose the event type before posting: `REQUEST_CHANGES` for blocking defects, `COMMENT` for neutral questions or non-blocking feedback, and `APPROVE` only when all comments are optional and the PR is ready.
+
+Before showing the draft, verify GitHub prerequisites if a PR number or URL is known:
+
+```bash
+# Verify GitHub CLI is installed and authenticated
+gh --version
+gh auth status
+
+# Read PR metadata and latest commit SHA
+gh pr view <PR_NUMBER_OR_URL> --json number,title,url,headRefOid,commits --jq '{number,title,url,headRefOid,latestCommit: .commits[-1].oid}'
+```
+
+If `gh` is unavailable or unauthenticated, tell the user that GitHub posting requires `gh auth login`. You may still show draft comments for manual use, but do not attempt GitHub API calls.
+
+Show the user exactly what would be posted before asking for approval:
+- PR number or URL
+- Target commit SHA
+- Event type: `COMMENT`, `APPROVE`, or `REQUEST_CHANGES`
+- Overall review body
+- Each comment's path, line or line range, side, and full body including suggestion blocks
+
+Then ask for explicit approval:
+
+```
+Question: "Ready to post this GitHub pending review exactly as shown?"
+Header: "Post PR Review"
+Options:
+  - Yes, post it: Creates and submits the pending GitHub review
+  - No, revise first: Keeps the draft local for edits
+```
+
+User approval to run a code review or prepare comments is not approval to post comments. Approval must happen after the exact GitHub review payload is shown.
+
+### 10. Post Approved GitHub Review
+
+Only after explicit approval, use a pending review so all comments are batched into a single GitHub review notification. Use the latest PR commit SHA as `commit_id`.
+
+```bash
+# Create a PENDING review with all approved comments. Omit event here.
+gh api repos/:owner/:repo/pulls/<PR_NUMBER>/reviews \
+  -X POST \
+  -f commit_id="<COMMIT_SHA>" \
+  -f 'comments[][path]=path/to/file.ts' \
+  -F 'comments[][line]=42' \
+  -f 'comments[][side]=RIGHT' \
+  -f 'comments[][body]=Comment text with optional suggestion block...' \
+  --jq '{id, state}'
+
+# Submit the pending review with the approved event type and body.
+gh api repos/:owner/:repo/pulls/<PR_NUMBER>/reviews/<REVIEW_ID>/events \
+  -X POST \
+  -f event="COMMENT" \
+  -f body="Overall review message"
+```
+
+Syntax rules:
+- Use single quotes around `comments[][path]`, `comments[][line]`, `comments[][side]`, and `comments[][body]` parameters.
+- Use `-f` for strings and `-F` for numeric line fields.
+- Use `side=RIGHT` for added or modified lines and `side=LEFT` only for deleted-line comments.
+- For multi-line comments, include `comments[][start_line]` and `comments[][line]` with numeric `-F` flags.
+- If GitHub rejects a line, re-check that the line is part of the PR diff and belongs to the selected commit.
+
 ## Expected Results
 
 After the subagent returns:
@@ -230,12 +318,15 @@ After the subagent returns:
 - ✓ **Untested changes** list (or confirmation that all behavior is covered)
 - ✓ Clear "Ready to merge?" verdict (Yes / No / With fixes)
 - ✓ Actionable fix guidance for each issue
+- ✓ If GitHub PR comments are requested, exact draft comments are shown before posting
+- ✓ GitHub PR review comments are posted only after explicit user approval, using a pending review
 
 ## Security Notes
 
 - **No secrets in context**: do not paste API keys, passwords, tokens, or credentials into `{DESCRIPTION}` or `{PLAN_OR_REQUIREMENTS}`. Use placeholders like `<REDACTED>` if referencing secrets.
 - **No customer data**: do not include PII or production data in review context.
 - **Subagent scope**: the reviewer subagent only reads git history and source files. It does not execute code or make changes.
+- **Public review comments**: GitHub PR review comments may be public and persistent. Always show the exact review payload and get explicit approval before posting.
 
 ## Troubleshooting
 
@@ -256,8 +347,19 @@ After the subagent returns:
 - Confirm the working directory is the git repo root: `git rev-parse --show-toplevel`
 - The subagent inherits the same working directory; ensure it has read access
 
+### GitHub review comments cannot be posted
+- Verify `gh` is installed: `gh --version`
+- Verify authentication: `gh auth status`
+- Confirm the PR number or URL is correct: `gh pr view <PR_NUMBER_OR_URL>`
+- If GitHub rejects a line comment, confirm the path and line are part of the PR diff at the selected commit
+
+### Suggestion block is rejected or unsafe
+- Suggestions replace the selected line or line range exactly; ensure the suggested code is complete
+- For Markdown suggestions containing fenced code blocks, use four backticks or tildes around the `suggestion` block
+
 ## References
 
 - Reviewer prompt template: `./code-reviewer.md` (same directory as this file)
 - Test review checklist: `./test-review-checklist.md` (same directory as this file)
 - Based on: [obra/superpowers requesting-code-review](https://github.com/obra/superpowers/tree/main/skills/requesting-code-review)
+- GitHub pending review workflow inspired by: [aidankinzett/claude-git-pr-skill](https://github.com/aidankinzett/claude-git-pr-skill)
