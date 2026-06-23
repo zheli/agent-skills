@@ -131,6 +131,17 @@ For each issue:
 ### Recommendations
 [Improvements for code quality, architecture, or process that don't rise to the level of issues]
 
+### GitHub Review Comment Candidates
+
+[List only actionable findings that are suitable for GitHub PR review comments. Write "No GitHub review comments recommended." if none.]
+
+For each candidate:
+- Path and line or line range
+- Severity
+- Suggested event impact: `COMMENT` or `REQUEST_CHANGES`
+- Comment body suitable for posting publicly
+- Optional `suggestion` block only when the replacement is exact, complete, and safe
+
 ### Assessment
 
 **Ready to merge?** [Yes | No | With fixes]
@@ -147,6 +158,7 @@ For each issue:
 - Explain WHY each issue matters
 - Acknowledge strengths
 - Give a clear verdict
+- Make GitHub review comment candidates concise, actionable, and safe to show the user for approval before posting
 
 **DON'T:**
 - Say "looks good" without checking
@@ -155,6 +167,7 @@ For each issue:
 - Be vague ("improve error handling")
 - Avoid giving a clear verdict
 - Flag a pattern as wrong when the latest base project instructions explicitly allow or require it
+- Include generic praise, broad recommendations, or findings without valid file:line references as GitHub review comment candidates
 
 ---
 
@@ -173,4 +186,5 @@ For each issue:
 - **Strengths** — what is working well, with specifics
 - **Issues** — categorized as Critical / Important / Minor, each with file:line, explanation, and fix guidance
 - **Recommendations** — optional improvements below issue threshold
+- **GitHub Review Comment Candidates** — optional line-comment drafts for user approval before any GitHub posting
 - **Assessment** — clear "Ready to merge?" verdict with 1-2 sentence reasoning
