@@ -79,26 +79,39 @@ export API_KEY="$(pass show my-app/api-key)"
 export DATABASE_URL="$(pass show my-app/database-url)"
 ```
 
-### 5. Keep Secrets Out of Git
-```bash
-# Ensure .envrc is ignored (create .gitignore entry if needed)
-grep -qxF '.envrc' .gitignore 2>/dev/null || echo '.envrc' >> .gitignore
+### 5. Decide Whether to Commit `.envrc`
+Do **not** commit an `.envrc` that embeds secret values. You **may** commit an `.envrc` that has no secrets — for example one that only loads values via `pass show`:
 
-# Confirm .envrc is not tracked
-git check-ignore -v .envrc || git status --short .envrc
+```bash
+# Safe to commit: no plaintext secrets, only pass paths
+export API_KEY="$(pass show my-app/api-key)"
+export DATABASE_URL="$(pass show my-app/database-url)"
 ```
 
-Expected: `.envrc` is ignored, or listed as untracked and must not be committed.
+```bash
+# Not safe to commit: plaintext secret values
+export API_KEY="sk-live-..."
+export DATABASE_URL="postgres://user:password@host/db"
+```
 
-Optional: commit a committed template such as `.envrc.example` that shows required variable names without calling `pass` or embedding values:
+Before committing, review the file:
 
 ```bash
-# Example template only — no secret values
-cat > .envrc.example << 'EOF'
-# Copy to .envrc and fill in <REPO_NAME> / secret paths for your pass store
-# export API_KEY="$(pass show <REPO_NAME>/api-key)"
-# export DATABASE_URL="$(pass show <REPO_NAME>/database-url)"
-EOF
+# Inspect .envrc for plaintext secrets (do not share output if any are present)
+cat .envrc
+```
+
+If the file contains plaintext secrets, keep it local:
+
+```bash
+# Ignore secret-bearing .envrc
+grep -qxF '.envrc' .gitignore 2>/dev/null || echo '.envrc' >> .gitignore
+```
+
+If the file only uses `pass show` (or other non-secret config), it is fine to commit:
+
+```bash
+git add .envrc
 ```
 
 ### 6. Allow direnv and Load Secrets
@@ -122,12 +135,13 @@ pass ls <REPO_NAME>
 ## Expected Results
 - ✅ Secrets stored under `pass` at `<REPO_NAME>/<SECRET_NAME>`
 - ✅ `.envrc` exports each needed variable via `pass show`
-- ✅ `.envrc` is gitignored and not committed
+- ✅ `.envrc` with no plaintext secrets may be committed; secret-bearing `.envrc` stays out of git
 - ✅ `direnv allow` succeeds and env vars are present in the shell
 - ✅ New secrets can be added with `pass add <REPO_NAME>/<SECRET_NAME>`
 
 ## Security Notes
-⚠️ **Never commit `.envrc` if it contains `pass show` of real secrets** — treat it as local-only unless the team explicitly shares a safe template.
+⚠️ **Never commit `.envrc` that contains secret values** (API keys, passwords, tokens, connection strings with credentials).
+⚠️ **`.envrc` without secrets is fine to commit** — including files that only call `pass show` to load values at runtime.
 ⚠️ **Do not print secret values** in logs, tickets, commits, or chat. Prefer `test -n "$VAR"` over `echo "$VAR"`.
 ⚠️ **pass encrypts with your GPG key** — teammates need their own pass entries (or a shared store setup); do not paste decrypted values into the repo.
 ⚠️ **Shell history** may capture `pass` commands; avoid embedding literal secret values on the command line.
@@ -150,8 +164,8 @@ pass ls <REPO_NAME>
 - Typo in path or export line; `pass show` failing inside `.envrc`
 - Solution: run `pass show <REPO_NAME>/<SECRET_NAME>` manually, fix `.envrc`, then `direnv allow .` again
 
-**`.envrc` accidentally staged**
-- Solution: `git restore --staged .envrc` and ensure `.envrc` is in `.gitignore`
+**Secret-bearing `.envrc` accidentally staged**
+- Solution: `git restore --staged .envrc`, remove plaintext secrets (use `pass show` instead) or add `.envrc` to `.gitignore`
 
 ## References
 - [pass (password-store)](https://www.passwordstore.org/)

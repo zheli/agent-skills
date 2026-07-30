@@ -8,7 +8,7 @@ This skill helps you:
 - Store secrets in pass under `{repo_name}/{secret_name}`
 - Inject secrets into env vars from `.envrc` via `pass show`
 - Add new secrets with `pass add`
-- Keep `.envrc` local and out of git
+- Commit safe `.envrc` files (no plaintext secrets); keep secret-bearing ones out of git
 
 ## Use Cases
 
@@ -43,13 +43,14 @@ Before using this skill, ensure you have:
 | Retrieve | `pass show <REPO_NAME>/<SECRET_NAME>` |
 | Add secret | `pass add <REPO_NAME>/<SECRET_NAME>` |
 | `.envrc` | `export <SECRET_VAR>="$(pass show <REPO_NAME>/<SECRET_NAME>)"` |
-| Git ignore | `.envrc` kept out of version control |
+| Git policy | Commit `.envrc` only when it has no plaintext secrets; ignore secret-bearing files |
 | Shell load | direnv loads exports when entering the directory |
 
 ## Security Considerations
 
 ⚠️ **Important Security Notes:**
-- Do not commit `.envrc` files that load real secrets
+- Do not commit `.envrc` files that contain secret values
+- `.envrc` without secrets (for example `pass show` only) may be committed
 - Never paste decrypted secret values into tickets, PRs, or chat
 - Prefer checking that a variable is set (`test -n`) over printing it
 - Each developer needs access to the corresponding pass entries
@@ -60,7 +61,7 @@ Before using this skill, ensure you have:
 After successful execution:
 - ✅ Secret stored in pass at `<REPO_NAME>/<SECRET_NAME>`
 - ✅ `.envrc` exports the env var via `pass show`
-- ✅ `.envrc` is gitignored
+- ✅ Secret-free `.envrc` may be committed; secret-bearing `.envrc` is not
 - ✅ `direnv allow` loads the variable into the shell
 - ✅ New secrets can be added with `pass add`
 
