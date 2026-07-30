@@ -1,6 +1,6 @@
-# Manage Repository Runtime Secrets
+# Manage Repository Secrets
 
-A Claude skill for injecting repository runtime secrets into environment variables using the `pass` CLI and a local `.envrc` file (direnv).
+A Claude skill for injecting repository secrets into environment variables using the `pass` CLI and a local `.envrc` file (direnv).
 
 ## Overview
 
@@ -14,7 +14,7 @@ This skill helps you:
 
 - Local development that needs API keys, tokens, or database URLs
 - Onboarding a developer to an existing pass-backed secret layout
-- Adding a new runtime secret for a repository
+- Adding a new secret for a repository
 - Standardizing how repos load secrets without committing values
 
 ## Prerequisites
@@ -27,7 +27,7 @@ Before using this skill, ensure you have:
 
 ## Usage
 
-1. Invoke the skill: `@manage-repo-runtime-secrets`
+1. Invoke the skill: `@manage-repository-secrets`
 2. Provide or confirm:
    - Repository namespace (`<REPO_NAME>`)
    - Secret name (`<SECRET_NAME>`)

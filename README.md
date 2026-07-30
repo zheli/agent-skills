@@ -15,7 +15,7 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 
 ### Secrets & Local Environment
 
-- **[Manage Repository Runtime Secrets](./.claude/skills/manage-repo-runtime-secrets/)** - Inject runtime secrets into environment variables via `.envrc` and the `pass` CLI (`pass show` / `pass add`).
+- **[Manage Repository Secrets](./.claude/skills/manage-repository-secrets/)** - Inject secrets into environment variables via `.envrc` and the `pass` CLI (`pass show` / `pass add`).
 
 ### Network Configuration
 

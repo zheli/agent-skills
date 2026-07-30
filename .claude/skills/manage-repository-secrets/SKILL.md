@@ -1,13 +1,13 @@
 ---
-name: manage-repo-runtime-secrets
-description: Manage repository runtime secrets with pass and direnv by injecting values into environment variables via a local .envrc file. Use when setting up, adding, or loading secrets for local development with pass show/add and .envrc exports.
+name: manage-repository-secrets
+description: Manage repository secrets with pass and direnv by injecting values into environment variables via a local .envrc file. Use when setting up, adding, or loading secrets for local development with pass show/add and .envrc exports.
 allowed-tools: [Bash, Read, Grep]
 ---
 
-# Manage Repository Runtime Secrets
+# Manage Repository Secrets
 
 ## Purpose
-Store repository runtime secrets in the [pass](https://www.passwordstore.org/) password store and inject them into the shell environment through a local `.envrc` file (loaded by direnv). Secrets stay out of git; each developer loads them locally from their own pass store.
+Store repository secrets in the [pass](https://www.passwordstore.org/) password store and inject them into the shell environment through a local `.envrc` file (loaded by direnv). Secrets stay out of git; each developer loads them locally from their own pass store.
 
 ## Prerequisites
 - [pass](https://www.passwordstore.org/) installed and initialized (`pass init`)
@@ -17,7 +17,7 @@ Store repository runtime secrets in the [pass](https://www.passwordstore.org/) p
 
 ## When to Use This Skill
 Use this skill when you need to:
-- Inject runtime secrets into environment variables for local development
+- Inject secrets into environment variables for local development
 - Add a new secret for a repository into the pass store
 - Create or update a `.envrc` that exports secrets from pass
 - Onboard a developer to an existing pass-backed `.envrc` setup
