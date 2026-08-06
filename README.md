@@ -30,6 +30,10 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 
 - **[Markdown to HTML Report](./.claude/skills/markdown-to-html-report/)** - Generate a self-contained, human-friendly companion HTML report from a markdown document, with optional GitHub Pages publishing and AES-GCM password protection.
 
+### Writing & Style
+
+- **[Simplified Technical English](./.claude/skills/simplified-technical-english/)** - Rewrite prose (docs, READMEs, PR descriptions, error messages) into ASD-STE100 Simplified Technical English to remove "AI slop", with a deterministic linter that scores violations per 100 words.
+
 ## Adding Skills
 
 You can add all skills from this collection to your project using:
