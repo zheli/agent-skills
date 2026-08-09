@@ -79,7 +79,9 @@ Write only the requested text. No preamble, no summary, no closing remarks.
 2. Lint the original draft to get the baseline score:
 
    ```bash
-   python3 .claude/skills/simplified-technical-english/ste-lint.py path/to/draft.md
+   LINTER=.claude/skills/simplified-technical-english/ste-lint.py
+   if [ ! -f "$LINTER" ]; then LINTER="$HOME/.agents/skills/simplified-technical-english/ste-lint.py"; fi
+   python3 "$LINTER" path/to/draft.md
    ```
 
 3. Rewrite the prose with the rules above, in the chosen mode.
@@ -101,13 +103,17 @@ Write only the requested text. No preamble, no summary, no closing remarks.
 Score from stdin:
 
 ```bash
-echo "your text" | python3 .claude/skills/simplified-technical-english/ste-lint.py
+LINTER=.claude/skills/simplified-technical-english/ste-lint.py
+if [ ! -f "$LINTER" ]; then LINTER="$HOME/.agents/skills/simplified-technical-english/ste-lint.py"; fi
+echo "your text" | python3 "$LINTER"
 ```
 
 Score one or more files (summary table, one line per file):
 
 ```bash
-python3 .claude/skills/simplified-technical-english/ste-lint.py draft.md README.md
+LINTER=.claude/skills/simplified-technical-english/ste-lint.py
+if [ ! -f "$LINTER" ]; then LINTER="$HOME/.agents/skills/simplified-technical-english/ste-lint.py"; fi
+python3 "$LINTER" draft.md README.md
 ```
 
 The stdin form prints a full JSON breakdown. `total_per100w` is the headline number — lower is cleaner. `em_dash(slop-marker)` counts true em/en dash characters as a separate slop marker.
