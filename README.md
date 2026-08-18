@@ -33,6 +33,7 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 ### Writing & Style
 
 - **[Simplified Technical English](./.claude/skills/simplified-technical-english/)** - Rewrite prose (docs, READMEs, PR descriptions, error messages) into ASD-STE100 Simplified Technical English to remove "AI slop", with a deterministic linter that scores violations per 100 words.
+- **[Comment Why, Not How](./.claude/skills/comment-why-not-how/)** - Rewrite code comments and doc comments in any language into one causal sentence that states why, not what the next line already shows.
 
 ## Adding Skills
 
