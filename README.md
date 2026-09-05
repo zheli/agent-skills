@@ -39,13 +39,7 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 
 - **[GitHub Multi-Token](./plugins/github-multi/)** - Fork of Cursor's GitHub MCP plugin with separate work and personal PATs (`github-work` / `github-personal`).
 
-**Install (local):**
-
-```bash
-ln -s /absolute/path/to/agent-skills/plugins/github-multi ~/.cursor/plugins/local/github-multi
-```
-
-Then reload the window and set both tokens under **Plugins → Configure**. Team Marketplace: import `https://github.com/zheli/agent-skills`. Full steps: [plugins/github-multi/README.md](./plugins/github-multi/README.md).
+**Install:** Customize → Plugins → add repository `https://github.com/zheli/agent-skills` → install **GitHub Multi-Token** → set both tokens under Configure. Full steps: [plugins/github-multi/README.md](./plugins/github-multi/README.md).
 
 ## Adding Skills
 

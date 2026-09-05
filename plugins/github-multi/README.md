@@ -6,27 +6,23 @@ Each token becomes its own MCP server: `github-work` and `github-personal`.
 
 ## Install
 
-### Local (any Cursor plan)
+### Customize (recommended)
+
+1. Open **Customize** in the Cursor sidebar.
+2. Open the **Plugins** tab.
+3. Add a repository / marketplace and enter `https://github.com/zheli/agent-skills`.
+4. Install **GitHub Multi-Token** (user or project scope).
+
+On Teams/Enterprise you can also import the same repo from **Dashboard → Plugins → Team Marketplaces → Add Marketplace → Import from Repo**, then install from Customize.
+
+### Local symlink (plugin development)
 
 ```bash
-git clone https://github.com/zheli/agent-skills.git
-ln -s "$(pwd)/agent-skills/plugins/github-multi" ~/.cursor/plugins/local/github-multi
-```
-
-Then run **Developer: Reload Window** in Cursor.
-
-If you already have this repo checked out:
-
-```bash
+mkdir -p ~/.cursor/plugins/local
 ln -s /absolute/path/to/agent-skills/plugins/github-multi ~/.cursor/plugins/local/github-multi
 ```
 
-### Team Marketplace
-
-1. Open **Dashboard → Plugins**.
-2. Under **Team Marketplaces**, click **Add Marketplace → Import from Repo**.
-3. Enter `https://github.com/zheli/agent-skills`.
-4. Install **GitHub Multi-Token**.
+Then run **Developer: Reload Window**.
 
 ### Configure tokens
 
