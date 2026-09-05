@@ -1,0 +1,51 @@
+{
+  "name": "github-multi",
+  "displayName": "GitHub Multi-Token",
+  "version": "1.0.0",
+  "minClientVersions": {
+    "cursor": "3.13.0"
+  },
+  "description": "GitHub MCP with separate work and personal-account access tokens.",
+  "author": {
+    "name": "zheli"
+  },
+  "homepage": "https://github.com/zheli/agent-skills/tree/main/plugins/github-multi",
+  "repository": "https://github.com/zheli/agent-skills",
+  "license": "MIT",
+  "logo": "assets/logo.svg",
+  "keywords": [
+    "github",
+    "git",
+    "repositories",
+    "pull-requests",
+    "issues",
+    "actions",
+    "mcp",
+    "multi-account"
+  ],
+  "category": "integrations",
+  "tags": [
+    "github",
+    "git",
+    "mcp",
+    "repositories",
+    "multi-token"
+  ],
+  "variables": {
+    "type": "object",
+    "properties": {
+      "GITHUB_TOKEN_WORK": {
+        "type": "string",
+        "title": "GitHub work personal access token",
+        "description": "Fine-grained or classic PAT for your work GitHub account. Create at https://github.com/settings/tokens with the repo scopes you want the agent to use."
+      },
+      "GITHUB_TOKEN_PERSONAL": {
+        "type": "string",
+        "title": "GitHub personal-account access token",
+        "description": "Fine-grained or classic PAT for your personal GitHub account. Create at https://github.com/settings/tokens with the repo scopes you want the agent to use."
+      }
+    },
+    "required": ["GITHUB_TOKEN_WORK", "GITHUB_TOKEN_PERSONAL"]
+  },
+  "mcpServers": "./mcp.json"
+}

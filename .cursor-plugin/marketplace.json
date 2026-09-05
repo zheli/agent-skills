@@ -1,0 +1,17 @@
+{
+  "name": "agent-skills",
+  "owner": {
+    "name": "zheli"
+  },
+  "metadata": {
+    "description": "Agent skills and Cursor plugins from zheli/agent-skills",
+    "pluginRoot": "plugins"
+  },
+  "plugins": [
+    {
+      "name": "github-multi",
+      "source": "github-multi",
+      "description": "GitHub MCP with separate work and personal-account access tokens."
+    }
+  ]
+}

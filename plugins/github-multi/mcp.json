@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "github-work": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN_WORK}"
+      }
+    },
+    "github-personal": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN_PERSONAL}"
+      }
+    }
+  }
+}

@@ -35,6 +35,18 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 - **[Simplified Technical English](./.claude/skills/simplified-technical-english/)** - Rewrite prose (docs, READMEs, PR descriptions, error messages) into ASD-STE100 Simplified Technical English to remove "AI slop", with a deterministic linter that scores violations per 100 words.
 - **[Comment Why, Not How](./.claude/skills/comment-why-not-how/)** - Rewrite code comments and doc comments in any language into one causal sentence that states why, not what the next line already shows.
 
+## Cursor Plugins
+
+- **[GitHub Multi-Token](./plugins/github-multi/)** - Fork of Cursor's GitHub MCP plugin with separate work and personal PATs (`github-work` / `github-personal`).
+
+**Install (local):**
+
+```bash
+ln -s /absolute/path/to/agent-skills/plugins/github-multi ~/.cursor/plugins/local/github-multi
+```
+
+Then reload the window and set both tokens under **Plugins → Configure**. Team Marketplace: import `https://github.com/zheli/agent-skills`. Full steps: [plugins/github-multi/README.md](./plugins/github-multi/README.md).
+
 ## Adding Skills
 
 You can add all skills from this collection to your project using:
