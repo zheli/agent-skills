@@ -38,15 +38,9 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 ## Cursor Plugins
 
 - **[GitHub Multi-Token](./plugins/github-multi/)** - Fork of Cursor's GitHub MCP plugin with separate work and personal PATs (`github-work` / `github-personal`).
+- **[WeChat MCP](./plugins/wechat-mcp/)** - macOS WeChat read/reply via [WeChat-MCP](https://github.com/BiboyQG/WeChat-MCP) (`uvx` stdio server).
 
-**Install (local):**
-
-```bash
-ln -s /absolute/path/to/agent-skills/plugins/github-multi ~/.cursor/plugins/local/github-multi
-```
-
-Then reload the window and set both tokens under **Plugins → Configure**. Team Marketplace: import `https://github.com/zheli/agent-skills`. Full steps: [plugins/github-multi/README.md](./plugins/github-multi/README.md).
-
+**Install:** Customize → Plugins → add repository `https://github.com/zheli/agent-skills` → install the plugin. For GitHub Multi-Token, set both tokens under Configure. WeChat MCP needs macOS, WeChat running, Accessibility for Cursor, and `uv` on `PATH`. Full steps: [plugins/github-multi/README.md](./plugins/github-multi/README.md), [plugins/wechat-mcp/README.md](./plugins/wechat-mcp/README.md).
 ## Adding Skills
 
 You can add all skills from this collection to your project using:

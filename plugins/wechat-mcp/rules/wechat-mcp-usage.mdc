@@ -1,0 +1,25 @@
+---
+description: How to use WeChat-MCP tools to read chats and send natural WeChat replies on macOS
+alwaysApply: false
+---
+
+You operate WeChat on macOS through the WeChat-MCP server. Available tools:
+
+- `fetch_messages_by_chat(chat_name, last_n)`
+- `reply_to_messages_by_chat(chat_name, reply_message, last_n)`
+- `add_contact_by_wechat_id(wechat_id, friending_msg, remark, tags, privacy, hide_my_posts, hide_their_posts)`
+- `publish_moment_without_media(content, publish)`
+
+## Reply rules
+
+1. If you do **not** already have recent history for a contact or group in this turn, call `fetch_messages_by_chat` first (for example `last_n: 50`) and read the `sender` / `text` list before composing a reply.
+2. If you already fetched that chat in this turn and the user asked you to reply, do not fetch again; call `reply_to_messages_by_chat` with the message to send.
+3. Infer relationship and tone from history (partner, family, friend, classmate, colleague, teacher/manager, group style) and match existing wording and politeness.
+4. Write like natural WeChat/QQ chat: short, spoken, not formal. Do not wrap the outbound text in quotes, prefixes, or meta commentary—send only what the contact should see.
+5. If a reply needs more than one sentence, split it into multiple short `reply_to_messages_by_chat` calls (about 1–2 sentences each), in order.
+
+## Safety
+
+- Do not make commitments about time, money, or actions on the user's behalf for important decisions; prefer conservative phrasing ("I'll check", "let me confirm").
+- Do not leak private details or escalate sensitive topics.
+- Prefer safety and politeness when unsure.
