@@ -12,6 +12,11 @@
       "name": "github-multi",
       "source": "github-multi",
       "description": "GitHub MCP with separate work and personal-account access tokens."
+    },
+    {
+      "name": "wechat-mcp",
+      "source": "wechat-mcp",
+      "description": "Read and reply to WeChat on macOS via the WeChat-MCP accessibility server."
     }
   ]
 }

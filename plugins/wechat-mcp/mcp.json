@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "wechat-mcp": {
+      "command": "uvx",
+      "args": ["--from", "wechat-mcp-server", "wechat-mcp"]
+    }
+  }
+}
