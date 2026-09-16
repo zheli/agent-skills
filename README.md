@@ -25,6 +25,8 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 
 - **[Create Linear Ticket](./.claude/skills/create-ticket/)** - Create Linear tickets from natural language descriptions using the `linear` CLI, with structured Background and Definition of Done sections.
 - **[Markdown Task Tracking](./.claude/skills/markdown-task-tracking/)** - Track project tasks and epics in individual markdown files under `docs/`, with `docs/PROJECT.md` as the central index.
+- **[Setup GTD Obsidian](./.claude/skills/setup-gtd-obsidian/)** - Ask for the vault path, store it in `~/.config/gtd-obsidian/config.toml`, bootstrap numbered `gtd/*` files if needed, and verify git sync.
+- **[GTD Obsidian Vault](./.claude/skills/gtd-obsidian/)** - Capture, review, mark done, and pick next actions on numbered GTD lists (`5-gtd-inbox.md`, etc.) with automatic git pull/commit/push.
 
 ### Documentation & Reporting
 
