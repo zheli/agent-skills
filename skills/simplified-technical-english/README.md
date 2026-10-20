@@ -29,12 +29,14 @@ Invoke the skill and give it the text or file to rewrite. The skill will lint th
 
 Run the linter directly:
 
+`npx skills` installs the canonical copy under `.agents/skills/` (project) or `~/.agents/skills/` (global). Adjust the path below if you installed elsewhere.
+
 ```bash
 # Score text from stdin (full JSON breakdown)
-echo "your text" | python3 .claude/skills/simplified-technical-english/ste-lint.py
+echo "your text" | python3 .agents/skills/simplified-technical-english/ste-lint.py
 
 # Score one or more files (one summary line per file)
-python3 .claude/skills/simplified-technical-english/ste-lint.py draft.md README.md
+python3 .agents/skills/simplified-technical-english/ste-lint.py draft.md README.md
 ```
 
 `total_per100w` is the headline number. Lower is cleaner. Lint a draft, apply the skill, then lint it again — the delta is the signal.

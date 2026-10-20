@@ -79,8 +79,9 @@ Write only the requested text. No preamble, no summary, no closing remarks.
 2. Lint the original draft to get the baseline score:
 
    ```bash
-   LINTER=.claude/skills/simplified-technical-english/ste-lint.py
-   if [ ! -f "$LINTER" ]; then LINTER="$HOME/.agents/skills/simplified-technical-english/ste-lint.py"; fi
+   for p in .agents/skills .claude/skills "$HOME/.agents/skills" "$HOME/.claude/skills"; do
+     [ -f "$p/simplified-technical-english/ste-lint.py" ] && LINTER="$p/simplified-technical-english/ste-lint.py" && break
+   done
    python3 "$LINTER" path/to/draft.md
    ```
 
@@ -103,16 +104,18 @@ Write only the requested text. No preamble, no summary, no closing remarks.
 Score from stdin:
 
 ```bash
-LINTER=.claude/skills/simplified-technical-english/ste-lint.py
-if [ ! -f "$LINTER" ]; then LINTER="$HOME/.agents/skills/simplified-technical-english/ste-lint.py"; fi
+for p in .agents/skills .claude/skills "$HOME/.agents/skills" "$HOME/.claude/skills"; do
+  [ -f "$p/simplified-technical-english/ste-lint.py" ] && LINTER="$p/simplified-technical-english/ste-lint.py" && break
+done
 echo "your text" | python3 "$LINTER"
 ```
 
 Score one or more files (summary table, one line per file):
 
 ```bash
-LINTER=.claude/skills/simplified-technical-english/ste-lint.py
-if [ ! -f "$LINTER" ]; then LINTER="$HOME/.agents/skills/simplified-technical-english/ste-lint.py"; fi
+for p in .agents/skills .claude/skills "$HOME/.agents/skills" "$HOME/.claude/skills"; do
+  [ -f "$p/simplified-technical-english/ste-lint.py" ] && LINTER="$p/simplified-technical-english/ste-lint.py" && break
+done
 python3 "$LINTER" draft.md README.md
 ```
 

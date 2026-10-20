@@ -4,18 +4,20 @@ This document provides essential information for AI coding agents working in thi
 
 ## Repository Overview
 
-This is a collection of Claude Code Skills for infrastructure and deployment tasks. Skills are documentation-based runbooks formatted as Markdown files with YAML frontmatter, located in `.claude/skills/`.
+This is a collection of Agent Skills for infrastructure and deployment tasks. Skills are documentation-based runbooks formatted as Markdown files with YAML frontmatter, located in `skills/`.
+
+`skills/` is the publishing layout the Agent Skills ecosystem expects. The `npx skills` CLI discovers it directly, then installs each skill into the consumer's `.agents/skills/` with symlinks out to `.claude/skills/`, `.cursor/skills/`, and so on. Do not author skills under `.claude/skills/` here — that is an install target, not a source directory.
 
 ## Project Structure
 
 ```
 .
-├── .claude/
-│   └── skills/
-│       └── {skill-name}/          # Each skill in its own directory
-│           ├── SKILL.md            # Main skill file with YAML frontmatter
-│           ├── README.md           # User-facing documentation
-│           └── LICENSE             # MIT license (required)
+├── skills/
+│   └── {skill-name}/               # Each skill in its own directory
+│       ├── SKILL.md                # Main skill file with YAML frontmatter
+│       ├── README.md               # User-facing documentation
+│       └── LICENSE                 # MIT license (required)
+├── plugins/                        # Cursor/Claude Code plugins
 ├── README.md                       # Root documentation
 └── LICENSE                         # MIT license
 ```
@@ -28,19 +30,19 @@ This is a collection of Claude Code Skills for infrastructure and deployment tas
 
 ```bash
 # Check YAML frontmatter syntax in SKILL.md files
-grep -A 5 "^---$" .claude/skills/*/SKILL.md
+grep -A 5 "^---$" skills/*/SKILL.md
 
 # Validate Markdown formatting
 find . -name "*.md" -not -path "./.git/*" -type f
 
 # Check for required files in each skill
-for skill in .claude/skills/*/; do
+for skill in skills/*/; do
   echo "Checking $skill"
   ls -1 "$skill" | grep -E "(SKILL.md|README.md|LICENSE)"
 done
 
 # Search for placeholder variables that need documentation
-grep -r "<[A-Z_]*>" .claude/skills/
+grep -r "<[A-Z_]*>" skills/
 ```
 
 ### Testing a Single Skill
@@ -48,10 +50,10 @@ grep -r "<[A-Z_]*>" .claude/skills/
 To manually test/verify a skill's commands:
 ```bash
 # Review the skill's commands (do not execute without user approval)
-cat .claude/skills/{skill-name}/SKILL.md
+cat skills/{skill-name}/SKILL.md
 
 # Validate YAML frontmatter
-head -n 6 .claude/skills/{skill-name}/SKILL.md
+head -n 6 skills/{skill-name}/SKILL.md
 ```
 
 ## Code Style Guidelines
@@ -188,7 +190,7 @@ ssh root@<SERVER_IP> 'verification command'
 
 ## Contributing New Skills
 
-1. Create directory: `.claude/skills/{skill-name}/`
+1. Create directory: `skills/{skill-name}/`
 2. Create `SKILL.md` with proper frontmatter
 3. Create `README.md` with user documentation
 4. Copy `LICENSE` file from repository root
