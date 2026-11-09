@@ -45,7 +45,7 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 **Install:** Customize → Plugins → add repository `https://github.com/zheli/agent-skills` → install the plugin. For GitHub Multi-Token, set both tokens under Configure. WeChat MCP needs macOS, WeChat running, Accessibility for Cursor, and `uv` on `PATH`. Full steps: [plugins/github-multi/README.md](./plugins/github-multi/README.md), [plugins/wechat-mcp/README.md](./plugins/wechat-mcp/README.md).
 ## Paseo Plugins
 
-- **[Worktree Placement](./plugins/worktree-placement/)** - Place new Paseo worktrees using `worktree-path` from your Worktrunk user or source project config, with Paseo defaults when absent.
+- **[Worktrunk Worktree Location Support](./plugins/worktrunk-worktree-location-support/)** - Place new Paseo worktrees using `worktree-path` from your Worktrunk user or source project config, with Paseo defaults when absent.
 
 ## Adding Skills
 

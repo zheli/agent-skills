@@ -1,4 +1,4 @@
-# Worktree Placement
+# Worktrunk Worktree Location Support
 
 Use `worktree-path` from your Worktrunk user or source project config when creating
 new Paseo worktrees.
@@ -69,8 +69,8 @@ Development checks require Node.js 24 or newer and npm.
    paseo plugin ls
    ```
 
-   Confirm `worktree-placement` reports `running`. After source edits, run
-   `paseo plugin reload worktree-placement`. Config edits need no reload.
+   Confirm `worktrunk-worktree-location-support` reports `running`. After source edits, run
+   `paseo plugin reload worktrunk-worktree-location-support`. Config edits need no reload.
 
 ## Behavior and security
 
@@ -88,7 +88,7 @@ Ignore nested worktree directories before creating them to prevent accidental co
 ## Disable
 
 ```bash
-paseo plugin disable worktree-placement
+paseo plugin disable worktrunk-worktree-location-support
 paseo plugin ls
 ```
 

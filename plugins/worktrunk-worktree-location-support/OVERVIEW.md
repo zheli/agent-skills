@@ -1,4 +1,4 @@
-# Worktree placement
+# Worktrunk worktree location support
 
 Use the global `worktree-path` from your Worktrunk user config for new Paseo
 worktrees. Reads `$XDG_CONFIG_HOME/worktrunk/config.toml`, or
