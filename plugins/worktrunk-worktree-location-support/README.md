@@ -49,6 +49,11 @@ overrides. Other variables (such as `owner` and `remote_repo`), filters (such as
 ## Setup
 
 Requires Paseo 0.14.0-beta.1 or newer with plugins enabled on the target daemon.
+Git installs require npm on the daemon's PATH. The manifest preparation step runs
+`npm ci --omit=dev --ignore-scripts` to install the locked `smol-toml` runtime
+dependency before Paseo compiles the plugin. Local directory installs should run
+`npm ci` in the plugin directory before installing or reloading.
+
 Development checks require Node.js 24 or newer and npm.
 
 1. If your template creates nested worktrees, ignore their parent directory in
