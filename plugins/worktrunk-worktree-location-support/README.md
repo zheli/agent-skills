@@ -79,7 +79,12 @@ Development checks require Node.js 24 or newer and npm.
 
 ## Behavior and security
 
-- Only the new worktree destination changes; other request fields are preserved.
+- If a new-worktree request targets a branch that already has a Git worktree, the
+  workspace opens that existing directory instead of creating another worktree.
+  This applies to branch checkouts, named branch-offs, and PR checkouts. GitHub PR
+  lookup requires an authenticated `gh` on the daemon's PATH; otherwise only explicit
+  branch refs are matched. Other forge PRs are matched only by explicit ref.
+- For new worktrees, only the destination changes; other request fields are preserved.
 - Applies daemon-wide to new worktrees from the app, CLI, MCP, and agent creation.
 - Paseo validates the destination and creates directories.
 - Existing destinations get Paseo-style suffixes (`-1`, `-2`, and so on); nothing is overwritten.

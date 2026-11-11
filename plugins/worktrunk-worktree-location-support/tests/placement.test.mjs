@@ -24,13 +24,21 @@ async function fixture(t, contents, xdg = false) {
   return { home, env, path };
 }
 
-test("registers creation hook and returns cleanup", () => {
-  const cleanup = () => {};
-  assert.equal(contribute({ addHook(name, handler) {
-    assert.equal(name, "worktree.create.before");
-    assert.equal(typeof handler, "function");
-    return cleanup;
-  } }), cleanup);
+function hooks() {
+  const registered = {};
+  const removed = [];
+  const cleanup = contribute({ addHook(name, handler) {
+    registered[name] = handler;
+    return () => removed.push(name);
+  } });
+  return { registered, removed, cleanup };
+}
+
+test("registers both hooks and removes them on cleanup", async () => {
+  const { registered, removed, cleanup } = hooks();
+  assert.deepEqual(Object.keys(registered).sort(), ["workspace.create.before", "worktree.create.before"]);
+  await cleanup();
+  assert.deepEqual(removed.sort(), ["workspace.create.before", "worktree.create.before"]);
 });
 
 for (const contents of [undefined, "# empty", '[list]\nfull = true']) {
@@ -131,8 +139,7 @@ test("hook preserves request fields and leaves missing config untouched", async 
     if (previous === undefined) delete process.env.XDG_CONFIG_HOME;
     else process.env.XDG_CONFIG_HOME = previous;
   });
-  let hook;
-  contribute({ addHook(_name, handler) { hook = handler; return () => {}; } });
+  const hook = hooks().registered["worktree.create.before"];
   await writeFile(options.path, "# no placement setting");
   assert.equal(await hook({ request }), undefined);
   await writeFile(options.path, 'worktree-path = ".worktrees/{{ branch }}"');
