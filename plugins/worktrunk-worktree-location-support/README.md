@@ -82,7 +82,7 @@ Development checks require Node.js 24 or newer and npm.
 - Only the new worktree destination changes; other request fields are preserved.
 - Applies daemon-wide to new worktrees from the app, CLI, MCP, and agent creation.
 - Paseo validates the destination and creates directories.
-- Existing plugin-chosen destinations fail without suffixing or overwriting.
+- Existing destinations get Paseo-style suffixes (`-1`, `-2`, and so on); nothing is overwritten.
 - Existing worktrees are not moved; restoration uses recorded paths.
 - Git may choose a unique branch name after the hook; the path retains the requested name.
 

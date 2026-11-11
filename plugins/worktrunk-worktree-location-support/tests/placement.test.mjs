@@ -87,6 +87,17 @@ test("invalid project config fails creation instead of silently falling back", a
   await assert.rejects(worktreePath({ ...request, sourceCheckout }, options), /nonempty string/);
 });
 
+test("adds Paseo-style numeric suffixes for existing destinations", async (t) => {
+  const options = await fixture(t, 'worktree-path = ".worktrees/{{ branch }}"');
+  const repoRoot = join(options.home, "repo");
+  const destination = join(repoRoot, ".worktrees/fix/login");
+  await mkdir(destination, { recursive: true });
+  await mkdir(`${destination}-1`);
+  await writeFile(`${destination}-2`, "");
+  assert.equal(await worktreePath({ ...request, repoRoot, sourceCheckout: repoRoot, branch: "fix/login" }, options),
+    `${destination}-3`);
+});
+
 test("honors XDG_CONFIG_HOME and expands home paths", async (t) => {
   const options = await fixture(t, 'worktree-path = "~/trees/{{ branch | sanitize }}"', true);
   assert.equal(await worktreePath(request, options), join(options.home, "trees/feature-login"));

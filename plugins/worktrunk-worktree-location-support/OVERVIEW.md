@@ -20,4 +20,5 @@ errors other than a missing file, or unsupported templates abort creation.
 overrides are not supported. Existing worktrees are not moved.
 
 Ignore nested worktree directories in Git before using a template inside the
-repository. Existing destinations fail rather than being overwritten.
+repository. Existing destinations receive numeric suffixes, matching Paseo's
+default placement, rather than being overwritten.

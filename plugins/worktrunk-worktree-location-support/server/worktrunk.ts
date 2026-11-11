@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { lstat, readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import { parse } from "smol-toml";
@@ -70,5 +70,24 @@ export async function worktreePath(
   });
   const expanded = rendered === "~" ? home
     : rendered.startsWith("~/") ? join(home, rendered.slice(2)) : rendered;
-  return resolve(repoRoot, expanded);
+  return uniquePath(resolve(repoRoot, expanded));
+}
+
+// Paseo suffixes only its own default path; plugin-chosen paths must already be unique.
+async function uniquePath(original: string): Promise<string> {
+  let candidate = original;
+  for (let suffix = 1; await pathExists(candidate); suffix++) {
+    candidate = `${original}-${suffix}`;
+  }
+  return candidate;
+}
+
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await lstat(path);
+    return true;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return false;
+    throw error;
+  }
 }
