@@ -12,10 +12,17 @@ Supports `{{ branch }}`, `{{ repo }}`, `{{ repo_path }}`, and the
 Relative paths resolve from the main repository root, and leading `~/` expands
 to the daemon user's home directory.
 
-Requires Paseo 0.14.0-beta.1 or newer with plugins enabled. Invalid TOML, read
+Requires Paseo 0.14.0-beta.1 or newer with plugins enabled. Git installation also
+requires npm on the daemon's PATH to install the locked TOML parser dependency
+from the npm registry during preparation. Invalid TOML, read
 errors other than a missing file, or unsupported templates abort creation.
 `[projects]` overrides, other Worktrunk variables and filters, and Worktrunk environment
 overrides are not supported. Existing worktrees are not moved.
 
+When a new-worktree workspace targets a branch or pull request whose branch already
+has a Git worktree, the plugin opens that existing directory instead of failing.
+GitHub pull request lookup uses the daemon's authenticated `gh` CLI.
+
 Ignore nested worktree directories in Git before using a template inside the
-repository. Existing destinations fail rather than being overwritten.
+repository. Existing destinations receive numeric suffixes, matching Paseo's
+default placement, rather than being overwritten.

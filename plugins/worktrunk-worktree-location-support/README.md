@@ -49,6 +49,11 @@ overrides. Other variables (such as `owner` and `remote_repo`), filters (such as
 ## Setup
 
 Requires Paseo 0.14.0-beta.1 or newer with plugins enabled on the target daemon.
+Git installs require npm on the daemon's PATH. The manifest preparation step runs
+`npm ci --omit=dev --ignore-scripts` to install the locked `smol-toml` runtime
+dependency before Paseo compiles the plugin. Local directory installs should run
+`npm ci` in the plugin directory before installing or reloading.
+
 Development checks require Node.js 24 or newer and npm.
 
 1. If your template creates nested worktrees, ignore their parent directory in
@@ -74,10 +79,15 @@ Development checks require Node.js 24 or newer and npm.
 
 ## Behavior and security
 
-- Only the new worktree destination changes; other request fields are preserved.
+- If a new-worktree request targets a branch that already has a Git worktree, the
+  workspace opens that existing directory instead of creating another worktree.
+  This applies to branch checkouts, named branch-offs, and PR checkouts. GitHub PR
+  lookup requires an authenticated `gh` on the daemon's PATH; otherwise only explicit
+  branch refs are matched. Other forge PRs are matched only by explicit ref.
+- For new worktrees, only the destination changes; other request fields are preserved.
 - Applies daemon-wide to new worktrees from the app, CLI, MCP, and agent creation.
 - Paseo validates the destination and creates directories.
-- Existing plugin-chosen destinations fail without suffixing or overwriting.
+- Existing destinations get Paseo-style suffixes (`-1`, `-2`, and so on); nothing is overwritten.
 - Existing worktrees are not moved; restoration uses recorded paths.
 - Git may choose a unique branch name after the hook; the path retains the requested name.
 

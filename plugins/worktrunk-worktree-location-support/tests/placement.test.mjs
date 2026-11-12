@@ -24,13 +24,21 @@ async function fixture(t, contents, xdg = false) {
   return { home, env, path };
 }
 
-test("registers creation hook and returns cleanup", () => {
-  const cleanup = () => {};
-  assert.equal(contribute({ addHook(name, handler) {
-    assert.equal(name, "worktree.create.before");
-    assert.equal(typeof handler, "function");
-    return cleanup;
-  } }), cleanup);
+function hooks() {
+  const registered = {};
+  const removed = [];
+  const cleanup = contribute({ addHook(name, handler) {
+    registered[name] = handler;
+    return () => removed.push(name);
+  } });
+  return { registered, removed, cleanup };
+}
+
+test("registers both hooks and removes them on cleanup", async () => {
+  const { registered, removed, cleanup } = hooks();
+  assert.deepEqual(Object.keys(registered).sort(), ["workspace.create.before", "worktree.create.before"]);
+  await cleanup();
+  assert.deepEqual(removed.sort(), ["workspace.create.before", "worktree.create.before"]);
 });
 
 for (const contents of [undefined, "# empty", '[list]\nfull = true']) {
@@ -87,6 +95,17 @@ test("invalid project config fails creation instead of silently falling back", a
   await assert.rejects(worktreePath({ ...request, sourceCheckout }, options), /nonempty string/);
 });
 
+test("adds Paseo-style numeric suffixes for existing destinations", async (t) => {
+  const options = await fixture(t, 'worktree-path = ".worktrees/{{ branch }}"');
+  const repoRoot = join(options.home, "repo");
+  const destination = join(repoRoot, ".worktrees/fix/login");
+  await mkdir(destination, { recursive: true });
+  await mkdir(`${destination}-1`);
+  await writeFile(`${destination}-2`, "");
+  assert.equal(await worktreePath({ ...request, repoRoot, sourceCheckout: repoRoot, branch: "fix/login" }, options),
+    `${destination}-3`);
+});
+
 test("honors XDG_CONFIG_HOME and expands home paths", async (t) => {
   const options = await fixture(t, 'worktree-path = "~/trees/{{ branch | sanitize }}"', true);
   assert.equal(await worktreePath(request, options), join(options.home, "trees/feature-login"));
@@ -120,8 +139,7 @@ test("hook preserves request fields and leaves missing config untouched", async 
     if (previous === undefined) delete process.env.XDG_CONFIG_HOME;
     else process.env.XDG_CONFIG_HOME = previous;
   });
-  let hook;
-  contribute({ addHook(_name, handler) { hook = handler; return () => {}; } });
+  const hook = hooks().registered["worktree.create.before"];
   await writeFile(options.path, "# no placement setting");
   assert.equal(await hook({ request }), undefined);
   await writeFile(options.path, 'worktree-path = ".worktrees/{{ branch }}"');
