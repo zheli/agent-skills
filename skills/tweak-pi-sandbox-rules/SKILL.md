@@ -106,9 +106,21 @@ resources; a global-only test must still load pi-sandbox from a global installat
 Fallback when a suitable subagent is unavailable:
 
 ```bash
-# Start an ephemeral session in the trusted project; inspect its tool evidence.
+# Start an ephemeral session for read or bash checks; inspect its tool evidence.
 cd "<PROJECT_DIR>" && pi -p --no-session -a --tools read,bash "<TEST_TASK>"
 ```
+
+Pi's `--tools` list replaces the default selection. When testing direct write or edit policy,
+include the relevant tools explicitly:
+
+```bash
+# Enable direct write/edit checks only against user-approved disposable fixtures.
+cd "<PROJECT_DIR>" && pi -p --no-session -a --tools read,bash,write,edit "<TEST_TASK>"
+```
+
+Omit `write` or `edit` if it is not needed. In `<TEST_TASK>`, name the exact approved fixture paths,
+expected allowances and denials, and cleanup steps. Restrict all mutations to those fixtures;
+never use existing user files or sandbox configuration as write/edit test targets.
 
 Do not pass `--no-sandbox`, disable extensions, or disable policy. Headless pi-sandbox permission
 prompts abort rather than granting access. If nested Pi is blocked (for example a trust-file lock
