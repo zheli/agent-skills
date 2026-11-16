@@ -15,6 +15,7 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 
 ### Secrets & Local Environment
 
+- **[Tweak Pi Sandbox Rules](./skills/tweak-pi-sandbox-rules/)** - Adjust global or project pi-sandbox permissions and verify allowed and blocked behavior in fresh Pi instances.
 - **[Manage Repository Secrets](./skills/manage-repository-secrets/)** - Inject secrets into environment variables via `.envrc` and the `pass` CLI (`pass show` / `pass add`).
 
 ### Network Configuration
