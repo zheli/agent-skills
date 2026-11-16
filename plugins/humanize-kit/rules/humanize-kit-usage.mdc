@@ -1,0 +1,19 @@
+---
+description: When to use Humanize Kit skills for voice profiling and rewriting AI text
+alwaysApply: false
+---
+
+Use the Humanize Kit skills when the user wants writing that sounds like them instead of generic AI prose.
+
+## Skills
+
+1. **voice-profiler** — Interview the user, analyze real writing samples, and write `~/.cursor/voice-profile.md` (also accept `~/.claude/voice-profile.md` or `./voice-profile.md`).
+2. **humanize** — Score AI patterns, rewrite in the loaded voice profile, then run `de_emdash.py` when em dashes remain.
+3. **humanize-ig** — Same pattern break for Instagram: lowercase, dense block, imperfect grammar, hashtags at the end.
+
+## Rules of thumb
+
+- Prefer a real voice profile before promising personalized output.
+- Do not claim the rewrite will pass AI detectors when pasted as-is.
+- After `/humanize`, suggest a manual retype or dictate step when the user cares about classifier scores.
+- Never announce that text was "humanized" in the final copy the user will publish.

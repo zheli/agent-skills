@@ -1,0 +1,9 @@
+{
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "./scripts/check-voice-profile.sh"
+      }
+    ]
+  }
+}

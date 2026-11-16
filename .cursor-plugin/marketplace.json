@@ -17,6 +17,11 @@
       "name": "wechat-mcp",
       "source": "wechat-mcp",
       "description": "Read and reply to WeChat on macOS via the WeChat-MCP accessibility server."
+    },
+    {
+      "name": "humanize-kit",
+      "source": "humanize-kit",
+      "description": "Rewrite AI text in your voice with humanize, humanize-ig, and voice-profiler skills."
     }
   ]
 }

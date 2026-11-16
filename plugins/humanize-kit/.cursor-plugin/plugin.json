@@ -1,0 +1,35 @@
+{
+  "name": "humanize-kit",
+  "displayName": "Humanize Kit",
+  "version": "2.2.0",
+  "minClientVersions": {
+    "cursor": "3.13.0"
+  },
+  "description": "Rewrite AI text in your voice. Three skills — humanize, humanize-ig, voice-profiler — that build a voice fingerprint from your writing and break AI detection patterns.",
+  "author": {
+    "name": "Branded Mayhem Collective",
+    "email": "hello@brandedmayhem.com"
+  },
+  "homepage": "https://github.com/zheli/agent-skills/tree/main/plugins/humanize-kit",
+  "repository": "https://github.com/zheli/agent-skills",
+  "license": "MIT",
+  "logo": "assets/logo.svg",
+  "keywords": [
+    "humanize",
+    "voice",
+    "writing",
+    "ai-pattern-interrupter",
+    "voice-fingerprint",
+    "linkedin",
+    "instagram"
+  ],
+  "category": "productivity",
+  "tags": [
+    "humanize",
+    "voice",
+    "writing",
+    "ai-detection",
+    "instagram"
+  ],
+  "hooks": "./hooks/hooks.json"
+}

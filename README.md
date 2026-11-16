@@ -42,8 +42,9 @@ A collection of reusable Claude Code Skills for infrastructure, deployment, and 
 
 - **[GitHub Multi-Token](./plugins/github-multi/)** - Fork of Cursor's GitHub MCP plugin with separate work and personal PATs (`github-work` / `github-personal`).
 - **[WeChat MCP](./plugins/wechat-mcp/)** - macOS WeChat read/reply via [WeChat-MCP](https://github.com/BiboyQG/WeChat-MCP) (`uvx` stdio server).
+- **[Humanize Kit](./plugins/humanize-kit/)** - Cursor packaging of [humanize-kit](https://github.com/Branded-Mayhem-Collective-LLC/humanize-kit): voice-profiler, humanize, and humanize-ig skills (local; no third-party API).
 
-**Install:** Customize → Plugins → add repository `https://github.com/zheli/agent-skills` → install the plugin. For GitHub Multi-Token, set both tokens under Configure. WeChat MCP needs macOS, WeChat running, Accessibility for Cursor, and `uv` on `PATH`. Full steps: [plugins/github-multi/README.md](./plugins/github-multi/README.md), [plugins/wechat-mcp/README.md](./plugins/wechat-mcp/README.md).
+**Install:** Customize → Plugins → add repository `https://github.com/zheli/agent-skills` → install the plugin. For GitHub Multi-Token, set both tokens under Configure. WeChat MCP needs macOS, WeChat running, Accessibility for Cursor, and `uv` on `PATH`. Humanize Kit: run `voice-profiler` once, then `humanize` / `humanize-ig`. Full steps: [plugins/github-multi/README.md](./plugins/github-multi/README.md), [plugins/wechat-mcp/README.md](./plugins/wechat-mcp/README.md), [plugins/humanize-kit/README.md](./plugins/humanize-kit/README.md).
 ## Paseo Plugins
 
 - **[Worktrunk Worktree Location Support](./plugins/worktrunk-worktree-location-support/)** - Place new Paseo worktrees using `worktree-path` from your Worktrunk user or source project config, with Paseo defaults when absent.
